@@ -25,8 +25,6 @@ export const generateDescriptionFromDom = (
   item: IArticle
 ): any => {
   // because of these function will be called from extendFunction. So, we can to pass $ and item as parameter
-  console.log('SKG utils funcs:', $, item);
-
   return {
     ...item,
   };
