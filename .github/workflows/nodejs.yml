@@ -1,9 +1,9 @@
 name: Build & test
 
-on:
-  push:
-    branches:
-      - release
+on: [push]
+  # push:
+  #   branches:
+  #     - release
 jobs:
   build_publish:
     runs-on: ubuntu-latest
