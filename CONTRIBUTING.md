@@ -13,7 +13,7 @@
 
   - Install dependencies: `npm install`.
   - Write your code in `src` folder.
-  - Write tests in `test` folder.
+  - Write tests in `__tests__` folder.
   - Test your code: `npm test`.
   - Make sure all tests pass. If you are adding a new feature, add tests for it. If you are fixing a bug, add a test that exposes the bug and fails without your fix.
 
