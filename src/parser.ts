@@ -25,6 +25,7 @@ export const generateDescriptionFromDom = (
   item: IArticle
 ): any => {
   // because of these function will be called from extendFunction. So, we can to pass $ and item as parameter
+  console.log('This is a sample function');
   return {
     ...item,
   };
