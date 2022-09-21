@@ -1,4 +1,5 @@
 import cheerio from 'cheerio';
+const tableToJson = require('tabletojson').Tabletojson;
 
 interface IArticle {
   id: string;
@@ -15,6 +16,42 @@ interface IArticle {
 }
 
 /**
+ * this is my simple parser to parse table. It's not perfect but it works. You can improve it
+ * @param $
+ * @param tableElm
+ * @returns
+ */
+ export const parseTable = ($: cheerio.CheerioAPI, tableElm: cheerio.Element) => {
+  const outerHTML = $.html($(tableElm));
+  return tableToJson.convert(outerHTML, {});
+};
+
+/**
+ * This is a sample function to parse form in a webpage. Let improve it
+ * @param $
+ * @param formElm
+ * @returns
+ */
+export const parseForm = ($: cheerio.CheerioAPI, formElm: cheerio.Cheerio) => {
+  const action = formElm.attr('action');
+  const method = formElm.attr('method');
+  const inputs = formElm.find('input');
+  const data = {};
+  inputs.each((i, input) => {
+    const name = $(input).attr('name');
+    const value = $(input).attr('value');
+    if (name) {
+      data[name] = value;
+    }
+  });
+  return {
+    action,
+    method,
+    data,
+  };
+};
+
+/**
  * This function is used to description of the article
  * @param $ Cheerio object
  * @param item article object, let see the interface IArticle
@@ -26,6 +63,7 @@ export const generateDescriptionFromDom = (
 ): any => {
   // because of these function will be called from extendFunction. So, we can to pass $ and item as parameter
   console.log('This is a sample function');
+
   return {
     ...item,
   };

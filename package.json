@@ -42,5 +42,8 @@
   "directories": {
     "test": "test"
   },
-  "author": "SK-Global"
+  "author": "SK-Global",
+  "dependencies": {
+    "tabletojson": "^2.0.7"
+  }
 }
