@@ -24,5 +24,5 @@
 When you are ready to publish your changes to npm registry, follow the steps below:
 
 - Update the version in `package.json` file. Refer to [Semantic Versioning](https://semver.org/) for versioning guidelines.
-- Merge the changes to release branch.
-- Push the changes to release branch. This will trigger the release pipeline which will publish the package to npm registry.
+- Merge the changes to `release` branch.
+- Push the changes to `release` branch. This will trigger the release pipeline which will publish the package to npm registry.
