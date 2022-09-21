@@ -1,5 +1,4 @@
 import cheerio from 'cheerio';
-const tableToJson = require('tabletojson').Tabletojson;
 
 interface IArticle {
   id: string;
@@ -21,9 +20,24 @@ interface IArticle {
  * @param tableElm
  * @returns
  */
- export const parseTable = ($: cheerio.CheerioAPI, tableElm: cheerio.Element) => {
-  const outerHTML = $.html($(tableElm));
-  return tableToJson.convert(outerHTML, {});
+export const parseTable = (
+  $: cheerio.CheerioAPI,
+  tableElm: cheerio.Element | string
+) => {
+  const $table = $(tableElm);
+  const $rows = $table.find('tr');
+  const result: any[] = [];
+  $rows.each((i, tr) => {
+    const $tr = $(tr);
+    const $cells = $tr.find('td');
+    const row: any = {};
+    $cells.each((j, td) => {
+      const $td = $(td);
+      row[j] = $td.text().trim();
+    });
+    result.push(row);
+  });
+  return result;
 };
 
 /**
