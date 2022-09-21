@@ -4,12 +4,12 @@
 
 - [ ] Install [Node.js](https://nodejs.org/en/download/). This will also install `npm`, the Node.js package manager.
 - [ ] Install [Yarn](https://yarnpkg.com/en/docs/install). This is a package manager for JavaScript.(Optional)
-- [ ] Install Visual Studio Code (VS Code) or any other IDE of your choice
+- [ ] Install [Visual Studio Code (VS Code)](https://code.visualstudio.com/) or any other IDE of your choice
 
 ## Make changes locally
 
 - Clone the repository to your local machine
-- Open the project in your IDE, start the development server and make changes.
+- Open the project in your IDE and make changes.
 
   - Install dependencies: `npm install`.
   - Write your code in `src` folder.
