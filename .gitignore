@@ -94,3 +94,4 @@ _gen
 .DS_Store
 env.sh
 node_modules
+.env
