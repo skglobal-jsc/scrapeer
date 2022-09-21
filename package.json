@@ -25,9 +25,6 @@
     "microbundle": "^0.15.0",
     "prettier": "^2.6.2"
   },
-  "np": {
-    "contents": "dist"
-  },
   "prettier": {
     "singleQuote": true
   },
@@ -39,5 +36,5 @@
   "directories": {
     "test": "test"
   },
-  "author": "Binh Bui"
+  "author": "SK-Global"
 }

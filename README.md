@@ -1,8 +1,6 @@
 # scrapeer
 
-A collection of utilities for scraping data from the web.
-
-
+Scrapeer is a collection of utilities for scraping data from the web. Develop by SK-Global
 ## Installation
 
 ```bash
