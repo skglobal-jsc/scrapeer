@@ -29,7 +29,7 @@ export const parseTable = (
   const totalRows = $rows.length;
   const totalCols = $rows.first().find('td').length;
   // find caption of table
-  const caption = $table.find('caption').text();
+  const caption = $table.find('caption').text().replace(/\n/g, '').trim();
 
   // loop through each row
   const rows: any = [];
