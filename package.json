@@ -11,7 +11,11 @@
     "dist/**.js*",
     "dist/**/*.ts"
   ],
+  "engines": {
+    "node": ">=14.16"
+  },
   "scripts": {
+    "dev": "ts-node demo.ts",
     "build": "microbundle --define PKG_VERSION=$npm_package_version",
     "watch": "microbundle watch --define PKG_VERSION=$npm_package_version",
     "test": "jest --coverage",
@@ -42,7 +46,5 @@
   "directories": {
     "test": "test"
   },
-  "author": "SK-Global",
-  "dependencies": {
-  }
+  "author": "SK-Global"
 }
