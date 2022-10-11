@@ -13,7 +13,6 @@ interface IArticle {
   // IF can be added many more fields
   [key: string]: any;
 }
-
 /**
  * this is my simple parser to parse table. It's not perfect but it works. You can improve it
  * @param $
@@ -21,22 +20,39 @@ interface IArticle {
  * @returns
  */
 export const parseTable = (
-  $: cheerio.CheerioAPI,
+  $: cheerio.Root,
   tableElm: cheerio.Element | string
 ) => {
   const $table = $(tableElm);
   const $rows = $table.find('tr');
-  const result: any[] = [];
-  $rows.each((i, tr) => {
-    const $tr = $(tr);
-    const $cells = $tr.find('td');
-    const row: any = {};
-    $cells.each((j, td) => {
-      const $td = $(td);
-      row[j] = $td.text().trim();
+
+  const totalRows = $rows.length;
+  const totalCols = $rows.first().find('td').length;
+  // find caption of table
+  const caption = $table.find('caption').text();
+
+  // loop through each row
+  const rows: any = [];
+  $rows.each((i, row) => {
+    const $row = $(row);
+    const cols: any = [];
+    $row.find('td').each((j, col) => {
+      const $col = $(col);
+      const text = $col.text().replace(/\n/g, '').trim();
+      cols.push(text);
     });
-    result.push(row);
+    rows.push({
+      index: i + 1,
+      cols,
+    });
   });
+
+  const result = {
+    caption,
+    totalRows,
+    totalCols,
+    rows,
+  };
   return result;
 };
 
