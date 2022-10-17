@@ -35,15 +35,15 @@ export const parseTable = (
   const rows: any = [];
   $rows.each((i, row) => {
     const $row = $(row);
-    const cols: any = [];
+    const cells: any = [];
     $row.find('td').each((j, col) => {
       const $col = $(col);
       const text = $col.text().replace(/\n/g, '').trim();
-      cols.push(text);
+      cells.push(text);
     });
     rows.push({
       index: i + 1,
-      cols,
+      cells,
     });
   });
 
