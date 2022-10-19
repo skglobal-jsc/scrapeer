@@ -31,7 +31,7 @@ describe('generateDescriptionFromDom', () => {
 
     // This is a sample article
     const item: any = {};
-    const result = generateDescriptionFromDom($, item);
+    const result = generateDescriptionFromDom($(".wb-contents")[0], item);
     expect(typeof result).toBe('object');
   });
 });
