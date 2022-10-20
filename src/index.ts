@@ -1,5 +1,5 @@
 import cheerio from 'cheerio';
-import { parseHref, parseImage, parseTable, parseText } from './parsers';
+import { parseHref, parseImage, parseList, parseTable, parseText } from './parsers';
 import { cleanText } from './parsers/utils';
 interface IArticle {
   id: string;
@@ -51,13 +51,12 @@ const extractTextFromDom = (
 
         case 'UL':
         case 'OL':
-        case 'DL':
-        case 'DIV':
-        case 'DD':
-          textContent += extractTextFromDom($, $child, item);
+          parseList($, child);
           break;
-        case 'DT':
-          textContent += '\n\n' + extractTextFromDom($, $child, item);
+        case 'DL':
+          break;
+        case 'DIV':
+          textContent += extractTextFromDom($, $child, item);
           break;
         case 'TABLE':
           textContent += parseTable($, child);
