@@ -28,4 +28,6 @@ const generateDescriptionFromDom = (
   };
 };
 
-export { generateDescriptionFromDom };
+// export { generateDescriptionFromDom };
+
+exports.generateDescriptionFromDom = generateDescriptionFromDom;
