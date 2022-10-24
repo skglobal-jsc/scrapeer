@@ -10,13 +10,13 @@ const mockArticle = {
   publishDate: new Date().toISOString(),
   description: 'test',
   loadedUrl:
-    'https://www.city.fukuoka.lg.jp/hofuku/hokenyobo/health/kansen/nCorV.html',
+    'https://www.city.fukuoka.lg.jp/hofuku/coronataisaku/health/jirei/cohs_.html',
 };
 (() => {
   // console.log('Hello world');
 
   const url =
-    'https://www.city.fukuoka.lg.jp/hofuku/hokenyobo/health/kansen/nCorV.html';
+    'https://www.city.fukuoka.lg.jp/hofuku/coronataisaku/health/jirei/cohs_.html';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);

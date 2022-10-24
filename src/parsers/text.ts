@@ -5,7 +5,8 @@ const parser = (
   element: cheerio.Element | string
 ): string => {
   const $element = $(element);
-  return cleanText($element.text());
+  // return cleanText($element.text());
+  return $element.text();
 };
 
 export default parser;
