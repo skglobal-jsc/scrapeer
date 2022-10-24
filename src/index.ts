@@ -180,7 +180,7 @@ export const parseHref = (
  * @param element - table element or selector
  * @returns
  */
-const parseTable = (
+export const parseTable = (
   $: cheerio.Root,
   element: cheerio.Element | string,
   item: IArticle
