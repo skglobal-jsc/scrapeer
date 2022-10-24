@@ -119,6 +119,9 @@ export const parseImage = (
 ): string => {
   const $element = $(element);
   const { loadedUrl = '' } = item;
+
+  let domain = (new URL(loadedUrl)).origin + "/";
+
   let textContent = '';
   if ((element as any).attribs.href && (element as any).attribs.alt !== 'pdf') {
     textContent +=
@@ -130,7 +133,7 @@ export const parseImage = (
     if ((element as any).attribs.src.includes('http')) {
       textContent += (element as any).attribs.src + '\n\n';
     } else {
-      textContent += loadedUrl + (element as any).attribs.src + '\n\n';
+      textContent += domain + (element as any).attribs.src + '\n\n';
     }
   }
 
@@ -144,6 +147,7 @@ export const parseHref = (
 ): string => {
   let description: string = '';
   const { loadedUrl = '' } = item;
+  let domain = (new URL(loadedUrl)).origin + "/";
 
   let domElm = element as any;
   let text_a = '';
@@ -162,7 +166,7 @@ export const parseHref = (
         description += '\n' + loadedUrl + domElm.attribs.href + '\n';
       } else {
         //TODO domain name extraction
-        description += '\n' + loadedUrl + domElm.attribs.href + '\n';
+        description += '\n' + domain + domElm.attribs.href + '\n';
       }
     }
   }
@@ -242,6 +246,9 @@ const parseParagraph = (
 ): string => {
   const $element = element as any;
   const { loadedUrl = '' } = item;
+
+  let domain = (new URL(loadedUrl)).origin + "/";
+
   let description = '';
   var link = '';
 
@@ -289,7 +296,7 @@ const parseParagraph = (
               ) {
                 link = ' - ' + loadedUrl + child.attribs.href + ' ';
               } else {
-                link = ' - ' + loadedUrl + child.attribs.href + ' ';
+                link = ' - ' + domain + child.attribs.href + ' ';
               }
             }
           }
@@ -310,7 +317,7 @@ const parseParagraph = (
             if (child.attribs.src.includes("http")) {
               description += child.attribs.src + "\n\n";
             } else {
-              description += loadedUrl + child.attribs.src + "\n\n";
+              description += domain + child.attribs.src + "\n\n";
             }
           }
           break;
