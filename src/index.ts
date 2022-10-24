@@ -1,6 +1,6 @@
 import { cleanText, getTableDescription } from './parsers/utils';
 
-export interface IArticle {
+interface IArticle {
   id: string;
   title: string;
   publishDate: string;
@@ -28,6 +28,4 @@ const generateDescriptionFromDom = (
   };
 };
 
-// export { generateDescriptionFromDom };
-
-exports.generateDescriptionFromDom = generateDescriptionFromDom;
+export { generateDescriptionFromDom };
