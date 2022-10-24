@@ -324,4 +324,4 @@ const generateDescriptionFromDom = (
   };
 };
 
-export { generateDescriptionFromDom };
+export { generateDescriptionFromDom, parseTable };
