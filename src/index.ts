@@ -315,13 +315,9 @@ const generateDescriptionFromDom = (
 ): any => {
   const $content = $(contentSector);
   let description = extractTextFromDom($, $content, item);
-  description = cleanText(
-    item.title + '\n' + item.publishDate + '\n\n' + description
-  );
+  description = cleanText(description);
 
-  return {
-    description,
-  };
+  return description;
 };
 
 export { generateDescriptionFromDom, parseTable };
