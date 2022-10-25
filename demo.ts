@@ -10,17 +10,17 @@ const mockArticle = {
   publishDate: new Date().toISOString(),
   description: 'test',
   loadedUrl:
-    'https://www.city.fukuoka.lg.jp/hofuku/coronataisaku/health/jirei/cohs_.html',
+    'https://www.city.iwaki.lg.jp/www/contents/1664238133651/index.html',
 };
 (() => {
   // console.log('Hello world');
 
   const url =
-    'https://www.city.fukuoka.lg.jp/hofuku/coronataisaku/health/jirei/cohs_.html';
+    'https://www.city.iwaki.lg.jp/www/contents/1664238133651/index.html';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);
-    const content: any = '.wb-contents';
+    const content: any = '.article';
     const result = generateDescriptionFromDom($, mockArticle, content);
 
     console.log('result', result);

@@ -20,7 +20,8 @@ const parser = (
   const inputs = $formElm.find('input');
   const data = {};
   inputs.each((i, input) => {
-    const name = $(input).attr('name');
+    const name = $(input).attr('name') || $(input).attr('type');
+
     const value = $(input).attr('value');
     if (name) {
       data[name] = value;

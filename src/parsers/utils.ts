@@ -1,4 +1,7 @@
-import { TableResult } from "./table";
+import { TableResult } from './table';
+import { FormResult } from './form';
+
+import * as url from 'url';
 
 export const cleanText = (text: string = '') => {
   const txt = text
@@ -17,10 +20,8 @@ export const getTableDescription = (tableResult: TableResult) => {
     description += `表のタイトルは${tableResult.caption}、です。\n`;
   }
 
-  if(tableResult.titles && tableResult.titles.length > 0){
-    description += `見出し行は左から${tableResult.titles.join(
-      '、'
-    )}です。\n`;
+  if (tableResult.titles && tableResult.titles.length > 0) {
+    description += `見出し行は左から${tableResult.titles.join('、')}です。\n`;
   }
 
   let currentIndex = 0;
@@ -41,11 +42,34 @@ export const getTableDescription = (tableResult: TableResult) => {
 
       if (i == tableResult.rows.length - 1) {
         description += `${rowText}です。\n表の終わりです。`;
-      }else{
+      } else {
         description += `${rowText}\n`;
       }
       currentIndex++;
     }
   });
+  return description;
+};
+
+export const getFormDescription = (
+  formResult: FormResult,
+  loadedUrl: string
+) => {
+  let description = '';
+
+  let action = formResult.action;
+
+  // if action if relative path, convert to absolute path
+  if (action && action.startsWith('/')) {
+    const parsedUrl = url.parse(loadedUrl);
+    action = `${parsedUrl.protocol}//${parsedUrl.host}${action}`;
+  }
+
+  description = `この下に、フォームがあります。\n`;
+  description += formResult.data['submit']
+    ? formResult.data['submit'] + '\n'
+    : '';
+  description += action;
+
   return description;
 };

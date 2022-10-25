@@ -1,4 +1,4 @@
-import { cleanText, getTableDescription } from './parsers/utils';
+import { cleanText, getTableDescription,getFormDescription } from './parsers/utils';
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
 
@@ -275,7 +275,7 @@ const extractTextFromDom = (
           description += getTableDescription(parseTable($, child, item));
           break;
         case 'FORM':
-          description += parseForm($, child);
+          description += getFormDescription(parseForm($, child), item.loadedUrl!);
           break;
         case 'H2':
           description += '●' + extractTextFromDom($, $child, item) + '\n';
@@ -296,6 +296,8 @@ const extractTextFromDom = (
         case 'OL':
         case 'LI':
         case 'DL':
+        case 'DD':
+        case 'DT':
         case 'DIV':
           description += extractTextFromDom($, $child, item) + '\n';
           break;
