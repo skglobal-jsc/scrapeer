@@ -275,7 +275,7 @@ const extractTextFromDom = (
           description += getTableDescription(parseTable($, child, item));
           break;
         case 'FORM':
-          description += getFormDescription(parseForm($, child), item.loadedUrl!);
+          description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'H2':
           description += '●' + extractTextFromDom($, $child, item) + '\n';
