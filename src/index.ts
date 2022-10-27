@@ -111,7 +111,7 @@ const parseParagraph = (
         }
         continue;
       }
-
+      console.log('tagType',tagType, tagName);
       switch (tagName) {
         case 'br':
           description += '\n';
@@ -148,18 +148,33 @@ const parseParagraph = (
         case 'div':
           description += parseParagraph($, child, item);
           break;
+        case 'p':
+          description += parseParagraph($, child, item);
+        break;
+        case 'form':
+          description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
+          break;
         case 'img':
-          if (child.attribs.alt && child.attribs.alt !== 'pdf') {
+          console.log('Co hinh');
+          if (child.attribs.alt && child.attribs.alt !== "pdf") {
             description +=
-              '\n\nここに「' +
-              child.attribs.alt +
-              '」の画像があります。' +
-              '\n';
+              "\n\nここに「" + child.attribs.alt + "」の画像があります。" + "\n";
 
-            if (child.attribs.src.includes('http')) {
-              description += child.attribs.src + '\n\n';
+            if (child.attribs.src.includes("http")) {
+              description += child.attribs.src + "\n\n";
             } else {
-              description += domain + child.attribs.src + '\n\n';
+              description += domain + child.attribs.src + "\n\n";
+            }
+          } else {
+            if (!child.attribs.alt) {
+              description +=
+                "\n\nここに画像があります。\n";
+
+              if (child.attribs.src.includes("http")) {
+                description += child.attribs.src + "\n\n";
+              } else {
+                description += domain + child.attribs.src + "\n\n";
+              }
             }
           }
           break;
