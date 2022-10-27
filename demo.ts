@@ -10,13 +10,13 @@ const mockArticle = {
   publishDate: new Date().toISOString(),
   description: 'test',
   loadedUrl:
-    'https://kankou-iwaki.or.jp/event/51745',
+    'https://kankou-iwaki.or.jp/event/51384',
 };
 (() => {
   // console.log('Hello world');
 
   const url =
-    'https://kankou-iwaki.or.jp/event/51745';
+    'https://kankou-iwaki.or.jp/event/51384';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);

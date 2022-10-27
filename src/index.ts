@@ -102,16 +102,8 @@ const parseParagraph = (
 
       if (!child) continue;
 
-      // const $child = child as any;
-      // if the child is a text node, return the text
-      // console.log("child", $child);
-
       const tagType = child.type;
       const tagName = child.name;
-
-      // console.log('tagType', tagType);
-      // console.log('tagName', tagName);
-      // console.log('child.data', child.data);
 
       if (tagType == 'text') {
         if (child.data) {
@@ -151,6 +143,9 @@ const parseParagraph = (
           description += parseParagraph($, child, item);
           break;
         case 'strong':
+          description += parseParagraph($, child, item);
+          break;
+        case 'div':
           description += parseParagraph($, child, item);
           break;
         case 'img':
@@ -265,12 +260,6 @@ const extractTextFromDom = (
         case 'TEXT':
           description += cleanText($child.text());
           break;
-        // case 'TD':
-        //   description += cleanText($child.text());
-        //   break;
-        // case 'TH':
-        //   description += cleanText($child.text());
-        //   break;
         case 'A':
           description += parseHref($, child, item);
           break;
@@ -287,6 +276,7 @@ const extractTextFromDom = (
           description += '●' + extractTextFromDom($, $child, item) + '\n';
           break;
         case 'P':
+        case 'DIV':
           description += parseParagraph($, child, item) + '\n';
           break;
         case 'H1':
@@ -302,12 +292,11 @@ const extractTextFromDom = (
         case 'DL':
         case 'DD':
         case 'DT':
-        case 'DIV':
         case 'SECTION':
           description += extractTextFromDom($, $child, item) + '\n';
           break;
         default:
-          // description += buildElementText($, $child, item);
+          // description += parseParagraph($, child, item);
           break;
       }
     });
