@@ -10,17 +10,17 @@ const mockArticle = {
   publishDate: new Date().toISOString(),
   description: 'test',
   loadedUrl:
-    'https://www.city.iwaki.lg.jp/www/contents/1664238133651/index.html',
+    'https://kankou-iwaki.or.jp/event/51745',
 };
 (() => {
   // console.log('Hello world');
 
   const url =
-    'https://www.city.iwaki.lg.jp/www/contents/1664238133651/index.html';
+    'https://kankou-iwaki.or.jp/event/51745';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);
-    const content: any = '.article';
+    const content: any = '.commonContentBox.detailBox article';
     const result = generateDescriptionFromDom($, mockArticle, content);
 
     console.log('result', result);

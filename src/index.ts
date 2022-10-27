@@ -1,4 +1,8 @@
-import { cleanText, getTableDescription,getFormDescription } from './parsers/utils';
+import {
+  cleanText,
+  getTableDescription,
+  getFormDescription,
+} from './parsers/utils';
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
 
@@ -79,7 +83,6 @@ const parseImage = (
   return textContent;
 };
 
-
 const parseParagraph = (
   $: cheerio.Root,
   element: cheerio.Element | string,
@@ -88,7 +91,7 @@ const parseParagraph = (
   const $element = element as any;
   const { loadedUrl = '' } = item;
 
-  let domain = (new URL(loadedUrl)).origin + "/";
+  let domain = new URL(loadedUrl).origin + '/';
 
   let description = '';
   var link = '';
@@ -151,14 +154,17 @@ const parseParagraph = (
           description += parseParagraph($, child, item);
           break;
         case 'img':
-          if (child.attribs.alt && child.attribs.alt !== "pdf") {
+          if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             description +=
-              "\n\nここに「" + child.attribs.alt + "」の画像があります。" + "\n";
+              '\n\nここに「' +
+              child.attribs.alt +
+              '」の画像があります。' +
+              '\n';
 
-            if (child.attribs.src.includes("http")) {
-              description += child.attribs.src + "\n\n";
+            if (child.attribs.src.includes('http')) {
+              description += child.attribs.src + '\n\n';
             } else {
-              description += domain + child.attribs.src + "\n\n";
+              description += domain + child.attribs.src + '\n\n';
             }
           }
           break;
@@ -287,8 +293,6 @@ const extractTextFromDom = (
         case 'H3':
         case 'H4':
         case 'H5':
-          description += extractTextFromDom($, $child, item) + '\n';
-          break;
         case 'SPAN':
         case 'TD':
         case 'TH':
@@ -299,6 +303,7 @@ const extractTextFromDom = (
         case 'DD':
         case 'DT':
         case 'DIV':
+        case 'SECTION':
           description += extractTextFromDom($, $child, item) + '\n';
           break;
         default:
