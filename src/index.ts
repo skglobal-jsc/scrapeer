@@ -111,7 +111,6 @@ const parseParagraph = (
         }
         continue;
       }
-      console.log('tagType',tagType, tagName);
       switch (tagName) {
         case 'br':
           description += '\n';
@@ -155,7 +154,6 @@ const parseParagraph = (
           description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
-          console.log('Co hinh');
           if (child.attribs.alt && child.attribs.alt !== "pdf") {
             description +=
               "\n\nここに「" + child.attribs.alt + "」の画像があります。" + "\n";
