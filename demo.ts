@@ -1,6 +1,8 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-import { generateDescriptionFromDom } from './src/index';
+// import { generateDescriptionFromDom } from './src/index';
+
+import { generateDescriptionFromDom } from '@sk-global/scrapeer';
 
 const mockArticle = {
   id: 'test',
@@ -9,8 +11,7 @@ const mockArticle = {
   crawledAt: new Date().toISOString(),
   publishDate: new Date().toISOString(),
   description: 'test',
-  loadedUrl:
-    'https://www.city.iwaki.lg.jp/www/contents/1664953386672/index.html',
+  loadedUrl: 'https://kankou-iwaki.or.jp/event/50968',
 };
 (() => {
   // console.log('Hello world');
@@ -19,13 +20,12 @@ const mockArticle = {
   // const url =
   //   'https://www.city.iwaki.lg.jp/www/contents/1664953386672/index.html';
 
-  const url =
-    'https://www.city.iwaki.lg.jp/www/contents/1664953386672/index.html';
+  const url = 'https://kankou-iwaki.or.jp/event/50968';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);
     // const content: any = '.txtbox';
-    const content: any = '.txtbox';
+    const content: any = 'article';
     const result = generateDescriptionFromDom($, mockArticle, content);
 
     console.log('result', result);

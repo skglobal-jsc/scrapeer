@@ -73,3 +73,13 @@ export const getFormDescription = (
 
   return description;
 };
+
+export const convert2byteNumberTo1byte = (num_str) =>  {
+  var rex = /[\uFF10-\uFF19]/g;
+  var str = num_str;
+
+  str = str.replace(rex, function(ch) {
+      return String.fromCharCode(ch.charCodeAt(0) - 65248);
+  });
+
+}
