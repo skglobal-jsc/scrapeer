@@ -2,7 +2,7 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import { generateDescriptionFromDom } from './src/index';
 
-const url = 'https://kankou-iwaki.or.jp/event/50968';
+const url = 'https://kankou-iwaki.or.jp/event/51384';
 const mockArticle = {
   id: 'test',
   title: 'test',
@@ -10,7 +10,7 @@ const mockArticle = {
   crawledAt: new Date().toISOString(),
   publishDate: new Date().toISOString(),
   description: 'test',
-  loadedUrl: 'https://kankou-iwaki.or.jp/event/50968',
+  loadedUrl: 'https://kankou-iwaki.or.jp/event/51384',
 };
 (() => {
   // console.log('Hello world');
@@ -19,7 +19,7 @@ const mockArticle = {
   // const url =
   //   'https://www.city.iwaki.lg.jp/www/contents/1664953386672/index.html';
 
-  const url = 'https://kankou-iwaki.or.jp/event/50968';
+  // const url = 'https://kankou-iwaki.or.jp/event/50968';
 
   axios.get(url).then((res) => {
     const $ = cheerio.load(res.data);

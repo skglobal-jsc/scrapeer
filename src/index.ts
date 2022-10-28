@@ -329,4 +329,14 @@ const generateDescriptionFromDom = (
   return description;
 };
 
-export { generateDescriptionFromDom, parseTable };
+const convert2byteNumberTo1byte = (num_str) =>  {
+  var rex = /[\uFF10-\uFF19]/g;
+  var str = num_str;
+
+  str = str.replace(rex, function(ch) {
+      return String.fromCharCode(ch.charCodeAt(0) - 65248);
+  });
+
+}
+
+export { generateDescriptionFromDom, parseTable, convert2byteNumberTo1byte };
