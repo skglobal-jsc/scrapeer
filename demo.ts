@@ -1,9 +1,8 @@
 import axios from 'axios';
 import cheerio from 'cheerio';
-// import { generateDescriptionFromDom } from './src/index';
+import { generateDescriptionFromDom } from './src/index';
 
-import { generateDescriptionFromDom } from '@sk-global/scrapeer';
-
+const url = 'https://kankou-iwaki.or.jp/event/50968';
 const mockArticle = {
   id: 'test',
   title: 'test',

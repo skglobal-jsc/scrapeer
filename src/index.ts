@@ -203,7 +203,7 @@ const parseTable = (
   let totalCols = $rows.first().find('th, td').length;
 
   let bodyText = $($table).find('tbody').text().trim();
-  if (!bodyText || bodyText.includes('jQuery(function()')) {
+  if (bodyText.includes('jQuery(function()')) {
     totalRows = 0;
     totalCols = 0;
   } else {
