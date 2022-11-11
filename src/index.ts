@@ -118,7 +118,7 @@ const parseParagraph = (
         case 'a':
           let text_a = '';
           if (child.children && child.children.length > 0) {
-            text_a = extractTextFromDom($, $(child), item);
+            text_a = parseParagraph($, child, item);
             description += text_a;
           }
           if (child.attribs.href && !child.attribs.href.includes(text_a)) {
@@ -150,6 +150,9 @@ const parseParagraph = (
         case 'p':
           description += parseParagraph($, child, item);
         break;
+        case 'table':
+          description += getTableDescription(parseTable($, child, item));
+          break;
         case 'form':
           description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
@@ -280,7 +283,7 @@ const extractTextFromDom = (
           description += parseImage($, child, item);
           break;
         case 'TABLE':
-          description += getTableDescription(parseTable($, child, item));
+          description += parseParagraph($, child, item);
           break;
         case 'FORM':
           description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
