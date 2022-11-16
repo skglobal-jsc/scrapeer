@@ -162,6 +162,9 @@ const parseParagraph = (
         case 'ol':
           description += parseOLComponent($, child, item);
           break;
+        case 'ul':
+          description += parseULComponent($, child, item);
+          break;
         case 'form':
           description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
@@ -212,7 +215,26 @@ const parseOLComponent = (
 
   if ($els.length > 0) {
     $element.find('li').each((i, col) => {
-      description += (i+1) + '. ' + parseParagraph($, col, item) + '\n';
+      description += i + 1 + '. ' + parseParagraph($, col, item) + '\n';
+    });
+  }
+  return description;
+};
+
+const parseULComponent = (
+  $: cheerio.Root,
+  element: cheerio.Element | string,
+  item: IArticle
+): string => {
+  const $element = $(element);
+  let description = '';
+  let numberItem = 1;
+
+  const $els = $element.find('li');
+
+  if ($els.length > 0) {
+    $element.find('li').each((i, col) => {
+      description += parseParagraph($, col, item) + '\n';
     });
   }
   return description;
@@ -313,13 +335,14 @@ const extractTextFromDom = (
           description += parseImage($, child, item);
           break;
         case 'TABLE':
-          description += parseParagraph($, child, item);
+          // description += parseParagraph($, child, item);
+          description += getTableDescription(parseTable($, child, item));
           break;
         case 'FORM':
           description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'H2':
-          description += '●' + extractTextFromDom($, $child, item) + '\n';
+          description += '●' + parseParagraph($, child, item) + '\n';
           break;
         case 'P':
         case 'DIV':
@@ -328,14 +351,18 @@ const extractTextFromDom = (
         case 'OL':
           description += parseOLComponent($, child, item) + '\n';
           break;
+        case 'UL':
+          description += parseULComponent($, child, item) + '\n';
+          break;
         case 'H1':
         case 'H3':
         case 'H4':
         case 'H5':
         case 'SPAN':
+          description += parseParagraph($, child, item) + '\n';
+          break;
         case 'TD':
         case 'TH':
-        case 'UL':
         case 'DL':
         case 'DD':
         case 'DT':
