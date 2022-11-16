@@ -1,8 +1,8 @@
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 import { generateDescriptionFromDom } from './src/index';
 
-const url = 'https://kankou-iwaki.or.jp/event/51384';
+const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
 const mockArticle = {
   id: 'test',
   title: 'test',
@@ -10,7 +10,7 @@ const mockArticle = {
   crawledAt: new Date().toISOString(),
   publishDate: new Date().toISOString(),
   description: 'test',
-  loadedUrl: 'https://kankou-iwaki.or.jp/event/51384',
+  loadedUrl: url,
 };
 (() => {
   // console.log('Hello world');
@@ -21,10 +21,12 @@ const mockArticle = {
 
   // const url = 'https://kankou-iwaki.or.jp/event/50968';
 
-  axios.get(url).then((res) => {
+  axios.get(url, {
+    insecureHTTPParser: true,
+  }).then((res,) => {
     const $ = cheerio.load(res.data);
     // const content: any = '.txtbox';
-    const content: any = 'article';
+    const content: any = '#tmp_contents';
     const result = generateDescriptionFromDom($, mockArticle, content);
 
     console.log('result', result);

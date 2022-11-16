@@ -105,6 +105,9 @@ const parseParagraph = (
       const tagType = child.type;
       const tagName = child.name;
 
+      // console.log('tagType', tagType);
+      // console.log('tagName', tagName);
+
       if (tagType == 'text') {
         if (child.data) {
           description += child.data;
@@ -141,6 +144,9 @@ const parseParagraph = (
         case 'span':
           description += parseParagraph($, child, item);
           break;
+        // case 'li':
+        //   description += parseParagraph($, child, item);
+        //   break;
         case 'strong':
           description += parseParagraph($, child, item);
           break;
@@ -149,32 +155,37 @@ const parseParagraph = (
           break;
         case 'p':
           description += parseParagraph($, child, item);
-        break;
+          break;
         case 'table':
           description += getTableDescription(parseTable($, child, item));
+          break;
+        case 'ol':
+          description += parseOLComponent($, child, item);
           break;
         case 'form':
           description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
-          if (child.attribs.alt && child.attribs.alt !== "pdf") {
+          if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             description +=
-              "\n\nここに「" + child.attribs.alt + "」の画像があります。" + "\n";
+              '\n\nここに「' +
+              child.attribs.alt +
+              '」の画像があります。' +
+              '\n';
 
-            if (child.attribs.src.includes("http")) {
-              description += child.attribs.src + "\n\n";
+            if (child.attribs.src.includes('http')) {
+              description += child.attribs.src + '\n\n';
             } else {
-              description += domain + child.attribs.src + "\n\n";
+              description += domain + child.attribs.src + '\n\n';
             }
           } else {
             if (!child.attribs.alt) {
-              description +=
-                "\n\nここに画像があります。\n";
+              description += '\n\nここに画像があります。\n';
 
-              if (child.attribs.src.includes("http")) {
-                description += child.attribs.src + "\n\n";
+              if (child.attribs.src.includes('http')) {
+                description += child.attribs.src + '\n\n';
               } else {
-                description += domain + child.attribs.src + "\n\n";
+                description += domain + child.attribs.src + '\n\n';
               }
             }
           }
@@ -184,6 +195,25 @@ const parseParagraph = (
           break;
       }
     }
+  }
+  return description;
+};
+
+const parseOLComponent = (
+  $: cheerio.Root,
+  element: cheerio.Element | string,
+  item: IArticle
+): string => {
+  const $element = $(element);
+  let description = '';
+  let numberItem = 1;
+
+  const $els = $element.find('li');
+
+  if ($els.length > 0) {
+    $element.find('li').each((i, col) => {
+      description += (i+1) + '. ' + parseParagraph($, col, item) + '\n';
+    });
   }
   return description;
 };
@@ -295,6 +325,9 @@ const extractTextFromDom = (
         case 'DIV':
           description += parseParagraph($, child, item) + '\n';
           break;
+        case 'OL':
+          description += parseOLComponent($, child, item) + '\n';
+          break;
         case 'H1':
         case 'H3':
         case 'H4':
@@ -303,8 +336,6 @@ const extractTextFromDom = (
         case 'TD':
         case 'TH':
         case 'UL':
-        case 'OL':
-        case 'LI':
         case 'DL':
         case 'DD':
         case 'DT':
@@ -332,14 +363,13 @@ const generateDescriptionFromDom = (
   return description;
 };
 
-const convert2byteNumberTo1byte = (num_str) =>  {
+const convert2byteNumberTo1byte = (num_str) => {
   var rex = /[\uFF10-\uFF19]/g;
   var str = num_str;
 
-  str = str.replace(rex, function(ch) {
-      return String.fromCharCode(ch.charCodeAt(0) - 65248);
+  str = str.replace(rex, function (ch) {
+    return String.fromCharCode(ch.charCodeAt(0) - 65248);
   });
-
-}
+};
 
 export { generateDescriptionFromDom, parseTable, convert2byteNumberTo1byte };
