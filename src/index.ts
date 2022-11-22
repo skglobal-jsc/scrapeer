@@ -107,6 +107,7 @@ const parseParagraph = (
 
       // console.log('tagType', tagType);
       // console.log('tagName', tagName);
+      // console.log('data', child.data);
 
       if (tagType == 'text') {
         if (child.data) {
@@ -144,6 +145,11 @@ const parseParagraph = (
         case 'span':
           description += parseParagraph($, child, item);
           break;
+        case 'h3':
+        case 'h4':
+        case 'h5':
+          description += "\n" + parseParagraph($, child, item) + "\n";
+          break;
         // case 'li':
         //   description += parseParagraph($, child, item);
         //   break;
@@ -154,7 +160,7 @@ const parseParagraph = (
           description += parseParagraph($, child, item);
           break;
         case 'p':
-          description += parseParagraph($, child, item);
+          description += parseParagraph($, child, item) + "\n";
           break;
         case 'table':
           description += getTableDescription(parseTable($, child, item));
