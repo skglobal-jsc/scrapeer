@@ -52,6 +52,10 @@ const parseHref = (
     }
   }
 
+  if(description.includes('javascript')){
+    description="";
+  }
+
   return description;
 };
 
@@ -140,11 +144,16 @@ const parseParagraph = (
             }
           }
 
+          if(link.includes("javascript")){
+            link = "";
+          }
+
           description += link;
           break;
         case 'span':
           description += parseParagraph($, child, item);
           break;
+        case 'h1':
         case 'h3':
         case 'h4':
         case 'h5':
@@ -171,9 +180,9 @@ const parseParagraph = (
         case 'ul':
           description += parseULComponent($, child, item);
           break;
-        case 'form':
-          description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
-          break;
+        // case 'form':
+        //   description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
+        //   break;
         case 'img':
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             description +=
@@ -344,9 +353,9 @@ const extractTextFromDom = (
           // description += parseParagraph($, child, item);
           description += getTableDescription(parseTable($, child, item));
           break;
-        case 'FORM':
-          description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
-          break;
+        // case 'FORM':
+        //   description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
+        //   break;
         case 'H2':
           description += '●' + parseParagraph($, child, item) + '\n';
           break;
@@ -364,6 +373,7 @@ const extractTextFromDom = (
         case 'H3':
         case 'H4':
         case 'H5':
+        case 'HEADER':
         case 'SPAN':
           description += parseParagraph($, child, item) + '\n';
           break;
@@ -391,8 +401,14 @@ const generateDescriptionFromDom = (
 ): any => {
   const $content = $(contentSector);
   let description = extractTextFromDom($, $content, item);
-  description = cleanText(description);
+  // console.log('description before', description);
+  // let startIndex = description.indexOf(item.title);
 
+  // startIndex = startIndex > 0 ? startIndex : 0;
+
+  // description = cleanText(description.substring(startIndex));
+  description = cleanText(description);
+  // console.log('description after', description);
   return description;
 };
 
