@@ -357,7 +357,7 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   }else if (
     element.attribs &&
     element.attribs.id &&
-    element.attribs.id.includes('common_button_sns')
+    (element.attribs.id.includes('button_sns') || element.attribs.id.includes('sns_button'))
   ) {
     if (loadedUrl.includes('kawachinagano.lg.jp')) {
       return true;

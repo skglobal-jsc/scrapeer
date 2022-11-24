@@ -26,6 +26,8 @@ export const getTableDescription = (tableResult: TableResult) => {
     description += `表のタイトルは${tableResult.caption}、です。\n`;
   }
 
+  let title_str = tableResult.titles?.join('、') || 'no_titlte';
+
   if (tableResult.titles && tableResult.titles.length > 0) {
     description += `見出し行は左から${tableResult.titles.join('、')}です。\n`;
   }
@@ -46,14 +48,18 @@ export const getTableDescription = (tableResult: TableResult) => {
         rowText += col + '、';
       });
 
-      if (i == tableResult.rows.length - 1) {
-        description += `${rowText}です。\n表の終わりです。`;
-      } else {
-        description += `${rowText}\n`;
+      if(!rowText.includes(title_str)){
+        if (i == tableResult.rows.length - 1) {
+          description += `${rowText}です。\n表の終わりです。`;
+        } else {
+          description += `${rowText}\n`;
+        }
+        currentIndex++;
       }
-      currentIndex++;
     }
   });
+
+  console.log("table", description);
   return description;
 };
 
