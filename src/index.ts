@@ -32,6 +32,11 @@ const parseHref = (
 
   let domElm = element as any;
   let text_a = '';
+
+  if (domElm.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+    return '';
+  }
+
   if (domElm.children && domElm.children.length > 0) {
     text_a = extractTextFromDom($, $(domElm), item);
     description += text_a;
@@ -52,8 +57,8 @@ const parseHref = (
     }
   }
 
-  if(description.includes('javascript')){
-    description="";
+  if (description.includes('javascript')) {
+    description = '';
   }
 
   return description;
@@ -124,6 +129,10 @@ const parseParagraph = (
           description += '\n';
           break;
         case 'a':
+          if (child.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+            continue;
+          }
+
           let text_a = '';
           if (child.children && child.children.length > 0) {
             text_a = parseParagraph($, child, item);
@@ -143,9 +152,9 @@ const parseParagraph = (
             }
           }
 
-          if(link.includes("javascript")){
-            link = "";
-          }else{
+          if (link.includes('javascript')) {
+            link = '';
+          } else {
             description += text_a;
           }
 
@@ -158,7 +167,7 @@ const parseParagraph = (
         case 'h3':
         case 'h4':
         case 'h5':
-          description += "\n" + parseParagraph($, child, item) + "\n";
+          description += '\n' + parseParagraph($, child, item) + '\n';
           break;
         // case 'li':
         //   description += parseParagraph($, child, item);
@@ -167,10 +176,14 @@ const parseParagraph = (
           description += parseParagraph($, child, item);
           break;
         case 'div':
+          //ignore social area in https://www.city.sapporo.jp/
+          if (isIgnoreTag(child as any, loadedUrl)) {
+            continue;
+          }
           description += parseParagraph($, child, item);
           break;
         case 'p':
-          description += parseParagraph($, child, item) + "\n";
+          description += parseParagraph($, child, item) + '\n';
           break;
         case 'table':
           description += getTableDescription(parseTable($, child, item));
@@ -315,13 +328,51 @@ const parseTable = (
   return result;
 };
 
+const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
+  //ignore social area in https://www.city.sapporo.jp/
+  if (
+    element.attribs &&
+    element.attribs.class &&
+    element.attribs.class.includes('rs-skip')
+  ) {
+    if (loadedUrl.includes('sapporo.jp')) {
+      return true;
+    }
+  } else if (
+    element.attribs &&
+    element.attribs.class &&
+    element.attribs.class.includes('plugin')
+  ) {
+    if (loadedUrl.includes('aomori.aomori.jp')) {
+      return true;
+    }
+  }else if (
+    element.attribs &&
+    element.attribs.class &&
+    element.attribs.class.includes('pdf_download')
+  ) {
+    if (loadedUrl.includes('kawachinagano.lg.jp')) {
+      return true;
+    }
+  }else if (
+    element.attribs &&
+    element.attribs.id &&
+    element.attribs.id.includes('common_button_sns')
+  ) {
+    if (loadedUrl.includes('kawachinagano.lg.jp')) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
 const extractTextFromDom = (
   $: cheerio.Root,
   $el: cheerio.Cheerio,
   item: IArticle
 ) => {
   let description = '';
-
   if (!$el) return '';
 
   // get children
@@ -362,6 +413,10 @@ const extractTextFromDom = (
           break;
         case 'P':
         case 'DIV':
+          const { loadedUrl = '' } = item;
+          if (isIgnoreTag(child as any, loadedUrl)) {
+            break;
+          }
           description += parseParagraph($, child, item) + '\n';
           break;
         case 'OL':
@@ -403,12 +458,12 @@ const generateDescriptionFromDom = (
   const $content = $(contentSector);
   let description = extractTextFromDom($, $content, item);
   // console.log('description before', description);
-  // let startIndex = description.indexOf(item.title);
+  let startIndex = description.indexOf(item.title);
 
-  // startIndex = startIndex > 0 ? startIndex : 0;
+  startIndex = startIndex > 0 ? startIndex : 0;
 
-  // description = cleanText(description.substring(startIndex));
-  description = cleanText(description);
+  description = cleanText(description.substring(startIndex));
+  // description = cleanText(description);
   // console.log('description after', description);
   return description;
 };
