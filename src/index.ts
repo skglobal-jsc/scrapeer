@@ -127,7 +127,6 @@ const parseParagraph = (
           let text_a = '';
           if (child.children && child.children.length > 0) {
             text_a = parseParagraph($, child, item);
-            description += text_a;
           }
           if (child.attribs.href && !child.attribs.href.includes(text_a)) {
             if (child.attribs.href.includes('http')) {
@@ -146,6 +145,8 @@ const parseParagraph = (
 
           if(link.includes("javascript")){
             link = "";
+          }else{
+            description += text_a;
           }
 
           description += link;
