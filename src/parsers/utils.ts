@@ -59,7 +59,6 @@ export const getTableDescription = (tableResult: TableResult) => {
     }
   });
 
-  console.log("table", description);
   return description;
 };
 
