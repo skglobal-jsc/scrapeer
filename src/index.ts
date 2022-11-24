@@ -33,15 +33,15 @@ const parseHref = (
   let domElm = element as any;
   let text_a = '';
 
-  if (domElm.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
-    return '';
-  }
-
   if (domElm.children && domElm.children.length > 0) {
     text_a = extractTextFromDom($, $(domElm), item);
     description += text_a;
   }
   if (domElm.attribs.href && !domElm.attribs.href.includes(text_a)) {
+    if (domElm.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+      return '';
+    }
+
     if (domElm.attribs.href.includes('http')) {
       description += '\n' + domElm.attribs.href + '\n';
     } else {
@@ -129,15 +129,14 @@ const parseParagraph = (
           description += '\n';
           break;
         case 'a':
-          if (child.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
-            continue;
-          }
-
           let text_a = '';
           if (child.children && child.children.length > 0) {
             text_a = parseParagraph($, child, item);
           }
           if (child.attribs.href && !child.attribs.href.includes(text_a)) {
+            if (child.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+              continue;
+            }
             if (child.attribs.href.includes('http')) {
               link = ' - ' + child.attribs.href + ' ';
             } else {
@@ -346,7 +345,7 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
     if (loadedUrl.includes('aomori.aomori.jp')) {
       return true;
     }
-  }else if (
+  } else if (
     element.attribs &&
     element.attribs.class &&
     element.attribs.class.includes('pdf_download')
@@ -354,10 +353,11 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
     if (loadedUrl.includes('kawachinagano.lg.jp')) {
       return true;
     }
-  }else if (
+  } else if (
     element.attribs &&
     element.attribs.id &&
-    (element.attribs.id.includes('button_sns') || element.attribs.id.includes('sns_button'))
+    (element.attribs.id.includes('button_sns') ||
+      element.attribs.id.includes('sns_button'))
   ) {
     if (loadedUrl.includes('kawachinagano.lg.jp')) {
       return true;
