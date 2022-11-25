@@ -193,9 +193,9 @@ const parseParagraph = (
         case 'ul':
           description += parseULComponent($, child, item);
           break;
-        // case 'form':
-        //   description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
-        //   break;
+        case 'form':
+          //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
+          break;
         case 'img':
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             description +=
