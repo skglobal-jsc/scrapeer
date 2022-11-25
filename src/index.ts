@@ -286,6 +286,7 @@ const parseTable = (
   let totalCols = $rows.first().find('th, td').length;
 
   let bodyText = $($table).find('tbody').text().trim();
+
   if (bodyText.includes('jQuery(function()')) {
     totalRows = 0;
     totalCols = 0;
@@ -334,9 +335,7 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
     element.attribs.class &&
     element.attribs.class.includes('rs-skip')
   ) {
-    if (loadedUrl.includes('sapporo.jp')) {
-      return true;
-    }
+    return true;
   } else if (
     element.attribs &&
     element.attribs.class &&
@@ -348,20 +347,16 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   } else if (
     element.attribs &&
     element.attribs.class &&
-    element.attribs.class.includes('pdf_download')
+    (element.attribs.class.includes('pdf_download') || element.attribs.class.includes('adobeReader') || element.attribs.class.includes('adobe-reader'))
   ) {
-    if (loadedUrl.includes('kawachinagano.lg.jp')) {
-      return true;
-    }
+    return true;
   } else if (
     element.attribs &&
     element.attribs.id &&
     (element.attribs.id.includes('button_sns') ||
       element.attribs.id.includes('sns_button'))
   ) {
-    if (loadedUrl.includes('kawachinagano.lg.jp')) {
-      return true;
-    }
+    return true;
   }
 
   return false;
@@ -457,12 +452,15 @@ const generateDescriptionFromDom = (
 ): any => {
   const $content = $(contentSector);
   let description = extractTextFromDom($, $content, item);
+
   // console.log('description before', description);
   let startIndex = description.indexOf(item.title);
 
   startIndex = startIndex > 0 ? startIndex : 0;
 
   description = cleanText(description.substring(startIndex));
+
+  description += '\n\n' + '以上です。'
   // description = cleanText(description);
   // console.log('description after', description);
   return description;
