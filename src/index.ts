@@ -107,6 +107,7 @@ const parseParagraph = (
   const { loadedUrl = '' } = item;
 
   let domain = new URL(loadedUrl).origin + '/';
+  let domainForImg = loadedUrl.substring(0, loadedUrl.lastIndexOf('/')+1);
 
   let description = '';
   var link = '';
@@ -222,6 +223,7 @@ const parseParagraph = (
           //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
+
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             description +=
               '\n\nここに「' +
@@ -232,7 +234,12 @@ const parseParagraph = (
             if (child.attribs.src.includes('http')) {
               description += child.attribs.src + '\n\n';
             } else {
-              description += domain + child.attribs.src + '\n\n';
+              let src = String(child.attribs.src);
+                if(src.startsWith('/')){
+                  description += domain + src + '\n\n';
+                }else{
+                  description += domainForImg + src + '\n\n';
+                }
             }
           } else {
             if (!child.attribs.alt) {
@@ -241,7 +248,12 @@ const parseParagraph = (
               if (child.attribs.src.includes('http')) {
                 description += child.attribs.src + '\n\n';
               } else {
-                description += domain + child.attribs.src + '\n\n';
+                let src = String(child.attribs.src);
+                if(src.startsWith('/')){
+                  description += domain + child.attribs.src + '\n\n';
+                }else{
+                  description += domainForImg + child.attribs.src + '\n\n';
+                }
               }
             }
           }
