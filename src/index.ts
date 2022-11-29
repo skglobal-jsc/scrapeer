@@ -45,14 +45,20 @@ const parseHref = (
     if (domElm.attribs.href.includes('http')) {
       description += '\n' + domElm.attribs.href + '\n';
     } else {
-      if (
-        !domElm.attribs.href.includes('/') &&
-        domElm.attribs.href.includes('#')
-      ) {
-        description += '\n' + loadedUrl + domElm.attribs.href + '\n';
-      } else {
-        //TODO domain name extraction
+      // if (
+      //   !domElm.attribs.href.includes('/') &&
+      //   domElm.attribs.href.includes('#')
+      // ) {
+      //   description += '\n' + loadedUrl + domElm.attribs.href + '\n';
+      // } else {
+      //   //TODO domain name extraction
+      //   description += '\n' + domain + domElm.attribs.href + '\n';
+      // }
+
+      if (!domElm.attribs.href.includes('#')) {
         description += '\n' + domain + domElm.attribs.href + '\n';
+      } else {
+        description ='';
       }
     }
   }
@@ -151,7 +157,7 @@ const parseParagraph = (
             }
           }
 
-          if (link.includes('javascript')) {
+          if (link.includes('javascript') || child.attribs.href.includes('#')) {
             link = '';
           } else {
             description += text_a;
