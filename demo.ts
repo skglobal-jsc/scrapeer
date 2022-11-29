@@ -4,7 +4,7 @@ import { generateDescriptionFromDom } from './src/index';
 
 // const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
 //http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
-const url = 'https://www.pref.ibaraki.jp/seikatsukankyo/bousaikiki/bousai/bousaitaisaku/hinantaisakukyouka.html';
+const url = 'https://www.city.hokuto.hokkaido.jp/docs/12814.html';
 const mockArticle = {
   id: 'test',
   title: 'test',
@@ -28,7 +28,7 @@ const mockArticle = {
   }).then((res,) => {
     const $ = cheerio.load(res.data);
     // const content: any = '.txtbox';
-    const content: any = '#tmp_contents';
+    const content: any = '#main';
     const result = generateDescriptionFromDom($, mockArticle, content);
 
     console.log('result', result);

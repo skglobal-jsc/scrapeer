@@ -22,8 +22,8 @@ interface IArticle {
 }
 
 const parseHref = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): string => {
   let description: string = '';
@@ -65,8 +65,8 @@ const parseHref = (
 };
 
 const parseImage = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): string => {
   const $element = $(element);
@@ -93,8 +93,8 @@ const parseImage = (
 };
 
 const parseParagraph = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): string => {
   const $element = element as any;
@@ -231,8 +231,8 @@ const parseParagraph = (
 };
 
 const parseOLComponent = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): string => {
   const $element = $(element);
@@ -250,8 +250,8 @@ const parseOLComponent = (
 };
 
 const parseULComponent = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): string => {
   const $element = $(element);
@@ -269,8 +269,8 @@ const parseULComponent = (
 };
 
 const parseTable = (
-  $: cheerio.Root,
-  element: cheerio.Element | string,
+  $: any,
+  element: any | string,
   item: IArticle
 ): TableResult => {
   const $table = $(element);
@@ -363,8 +363,8 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
 };
 
 const extractTextFromDom = (
-  $: cheerio.Root,
-  $el: cheerio.Cheerio,
+  $: any,
+  $el: any,
   item: IArticle
 ) => {
   let description = '';
@@ -447,7 +447,7 @@ const extractTextFromDom = (
 };
 
 const generateDescriptionFromDom = (
-  $: cheerio.Root,
+  $: any,
   item: IArticle,
   contentSector: string = 'body'
 ): any => {

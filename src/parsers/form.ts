@@ -11,8 +11,8 @@ export interface FormResult {
  * @returns
  */
 const parser = (
-  $: cheerio.Root,
-  element: cheerio.Element | string
+  $: any,
+  element: any | string
 ): FormResult => {
   const $formElm = $(element);
   const action = $formElm.attr('action') || '';

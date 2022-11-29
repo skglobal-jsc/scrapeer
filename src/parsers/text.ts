@@ -1,8 +1,8 @@
 import { cleanText } from './utils';
 
 const parser = (
-  $: cheerio.Root,
-  element: cheerio.Element | string
+  $: any,
+  element: any | string
 ): string => {
   const $element = $(element);
   // return cleanText($element.text());

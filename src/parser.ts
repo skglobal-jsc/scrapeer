@@ -20,8 +20,8 @@ interface IArticle {
  * @returns
  */
 export const parseTable = (
-  $: cheerio.Root,
-  tableElm: cheerio.Element | string
+  $: any,
+  tableElm: any | string
 ) => {
   const $table = $(tableElm);
   const $rows = $table.find('tr');
@@ -62,7 +62,7 @@ export const parseTable = (
  * @param formElm
  * @returns
  */
-export const parseForm = ($: cheerio.CheerioAPI, formElm: cheerio.Cheerio) => {
+export const parseForm = ($: anyAPI, formElm: any) => {
   const action = formElm.attr('action');
   const method = formElm.attr('method');
   const inputs = formElm.find('input');
@@ -88,7 +88,7 @@ export const parseForm = ($: cheerio.CheerioAPI, formElm: cheerio.Cheerio) => {
  * @returns you can return anything you want
  */
 export const generateDescriptionFromDom = (
-  $: cheerio.CheerioAPI,
+  $: anyAPI,
   item: IArticle
 ): any => {
 
