@@ -160,7 +160,12 @@ const parseParagraph = (
           description += link;
           break;
         case 'span':
-          description += parseParagraph($, child, item);
+          const desc_span = parseParagraph($, child, item);
+
+          if(!isIgnoreText(desc_span)){
+            description += desc_span;
+          }
+          break;
           break;
         case 'h1':
         case 'h3':
@@ -172,17 +177,31 @@ const parseParagraph = (
         //   description += parseParagraph($, child, item);
         //   break;
         case 'strong':
-          description += parseParagraph($, child, item);
+          const desc_strong = parseParagraph($, child, item);
+
+          if(!isIgnoreText(desc_strong)){
+            description += desc_strong;
+          }
           break;
         case 'div':
           //ignore social area in https://www.city.sapporo.jp/
-          if (isIgnoreTag(child as any, loadedUrl)) {
-            continue;
+          // if (isIgnoreTag(child as any, loadedUrl)) {
+          //   continue;
+          // }
+          const desc_div = parseParagraph($, child, item);
+
+          if(!isIgnoreText(desc_div)) {
+            description += desc_div;
           }
-          description += parseParagraph($, child, item);
+
           break;
         case 'p':
-          description += parseParagraph($, child, item) + '\n';
+          const desc_p = parseParagraph($, child, item) + '\n';
+
+          if(!isIgnoreText(desc_p)){
+            description += desc_p;
+          }
+
           break;
         case 'table':
           description += getTableDescription(parseTable($, child, item));
@@ -326,6 +345,22 @@ const parseTable = (
     rows,
   };
   return result;
+};
+
+const isIgnoreText = (text: string): boolean => {
+  //ignore social area in https://www.city.sapporo.jp/
+  if(text.includes('Acrobat Reader') ||
+    text.includes('Adobe Reader') ||
+      text.includes('adobe.com/jp') ||
+      text.includes('function(') ||
+      text.includes('connect.facebook.net') ||
+      text.toLowerCase().includes('line-website.com') ||
+      text.toLowerCase().includes('document.write(') ||
+      text.toLowerCase().includes('twitter.com')){
+    return true;
+  }
+
+  return false;
 };
 
 const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
