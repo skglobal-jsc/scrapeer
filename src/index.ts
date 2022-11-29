@@ -434,10 +434,11 @@ const extractTextFromDom = (
         case 'DD':
         case 'DT':
         case 'SECTION':
+        case 'ARTICLE':
           description += extractTextFromDom($, $child, item) + '\n';
           break;
         default:
-          // description += parseParagraph($, child, item);
+          // description += extractTextFromDom($, $child, item) + '\n';
           break;
       }
     });
