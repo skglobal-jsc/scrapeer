@@ -63,7 +63,7 @@ const parseHref = (
     }
   }
 
-  if (description.includes('javascript')) {
+  if (description.includes('javascript') || description.includes('#')) {
     description = '';
   }
 
@@ -511,11 +511,14 @@ const generateDescriptionFromDom = (
   const $content = $(contentSector);
 
   if (titleEle) {
+    const $title = $(titleEle);
+
+
     // find all elements before the title element and remove them
-    $(titleEle).prevAll().remove();
+    $title.prevAll().remove();
 
     // also remove title element to make sure it is not part of the description
-    $(titleEle).remove();
+    $title.remove();
   }
 
   let description = extractTextFromDom($, $content, item);
