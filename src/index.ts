@@ -513,7 +513,6 @@ const generateDescriptionFromDom = (
   if (titleEle) {
     const $title = $(titleEle);
 
-
     // find all elements before the title element and remove them
     $title.prevAll().remove();
 
@@ -521,18 +520,9 @@ const generateDescriptionFromDom = (
     $title.remove();
   }
 
-  let description = extractTextFromDom($, $content, item);
-
-  // console.log('description before', description);
-  // let startIndex = description.indexOf(item.title);
-
-  // startIndex = startIndex > 0 ? startIndex : 0;
-
-  // description = cleanText(description.substring(startIndex));
-
+  let description = cleanText(extractTextFromDom($, $content, item));
   description += '\n\n' + '以上です。'
-  // description = cleanText(description);
-  // console.log('description after', description);
+
   return description;
 };
 
