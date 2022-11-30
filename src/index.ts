@@ -158,7 +158,7 @@ const parseParagraph = (
             }
           }
 
-          if (link.includes('javascript') || child.attribs.href.includes('#')) {
+          if (link.includes('javascript') || link.includes('#')) {
             link = '';
           } else {
             description += text_a;
@@ -374,7 +374,8 @@ const isIgnoreText = (text: string): boolean => {
       text.includes('connect.facebook.net') ||
       text.toLowerCase().includes('line-website.com') ||
       text.toLowerCase().includes('document.write(') ||
-      text.toLowerCase().includes('twitter.com')){
+      text.toLowerCase().includes('twitter.com')||
+      text.toLowerCase().includes('hatena')){
     return true;
   }
 
@@ -407,7 +408,9 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
     element.attribs &&
     element.attribs.id &&
     (element.attribs.id.includes('button_sns') ||
-      element.attribs.id.includes('sns_button'))
+      element.attribs.id.includes('sns_button') ||
+      element.attribs.id.includes('tmp_hatena') ||
+      element.attribs.id.includes('tmp_mixi'))
   ) {
     return true;
   }
@@ -502,17 +505,27 @@ const extractTextFromDom = (
 const generateDescriptionFromDom = (
   $: any,
   item: IArticle,
-  contentSector: string = 'body'
+  contentSector: string = 'body',
+  titleEle?: any
 ): any => {
   const $content = $(contentSector);
+
+  if (titleEle) {
+    // find all elements before the title element and remove them
+    $(titleEle).prevAll().remove();
+
+    // also remove title element to make sure it is not part of the description
+    $(titleEle).remove();
+  }
+
   let description = extractTextFromDom($, $content, item);
 
   // console.log('description before', description);
-  let startIndex = description.indexOf(item.title);
+  // let startIndex = description.indexOf(item.title);
 
-  startIndex = startIndex > 0 ? startIndex : 0;
+  // startIndex = startIndex > 0 ? startIndex : 0;
 
-  description = cleanText(description.substring(startIndex));
+  // description = cleanText(description.substring(startIndex));
 
   description += '\n\n' + '以上です。'
   // description = cleanText(description);
