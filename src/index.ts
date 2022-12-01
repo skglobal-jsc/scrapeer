@@ -42,7 +42,7 @@ const parseHref = (
       return '';
     }
 
-    if (domElm.attribs.href.includes('http')) {
+    if (domElm.attribs.href && domElm.attribs.href.includes('http')) {
       description += '\n' + domElm.attribs.href + '\n';
     } else {
       // if (
@@ -55,7 +55,7 @@ const parseHref = (
       //   description += '\n' + domain + domElm.attribs.href + '\n';
       // }
 
-      if (!domElm.attribs.href.includes('#')) {
+      if (domElm.attribs.href && !domElm.attribs.href.includes('#')) {
         description += '\n' + domain + domElm.attribs.href + '\n';
       } else {
         description ='';
@@ -140,20 +140,22 @@ const parseParagraph = (
           if (child.children && child.children.length > 0) {
             text_a = parseParagraph($, child, item);
           }
-          if (child.attribs.href && !child.attribs.href.includes(text_a)) {
-            if (child.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+
+          const href = child.attribs.href? String(child.attribs.href) : '';
+          if (href.includes(text_a)) {
+            if (href.includes('https://get.adobe.com/jp/reader/')) {
               continue;
             }
-            if (child.attribs.href.includes('http')) {
-              link = ' - ' + child.attribs.href + ' ';
+            if (href.includes('http')) {
+              link = ' - ' + href + ' ';
             } else {
               if (
-                !child.attribs.href.includes('/') &&
-                child.attribs.href.includes('#')
+                !href.includes('/') &&
+                href.includes('#')
               ) {
-                link = ' - ' + loadedUrl + child.attribs.href + ' ';
+                link = ' - ' + loadedUrl + href + ' ';
               } else {
-                link = ' - ' + domain + child.attribs.href + ' ';
+                link = ' - ' + domain + href + ' ';
               }
             }
           }
@@ -225,34 +227,38 @@ const parseParagraph = (
         case 'img':
 
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
-            description +=
+
+            let src = child.attribs.src ? String(child.attribs.src) : '';
+            if(src){
+              description +=
               '\n\nここに「' +
               child.attribs.alt +
               '」の画像があります。' +
               '\n';
-            let src = child.attribs.src || '';
-            if (src.includes('http')) {
-              description += child.attribs.src + '\n\n';
-            } else if(!src.startsWith('data:image')){
-              let src = String(child.attribs.src);
-                if(src.startsWith('/')){
-                  description += domain + src + '\n\n';
-                }else{
-                  description += domainForImg + src + '\n\n';
-                }
+
+              if (src.includes('http')) {
+                description += src + '\n\n';
+              } else if(!src.startsWith('data:image')){
+                  if(src.startsWith('/')){
+                    description += domain + src + '\n\n';
+                  }else{
+                    description += domainForImg + src + '\n\n';
+                  }
+              }
             }
           } else {
             if (!child.attribs.alt) {
-              description += '\n\nここに画像があります。\n';
-              let src = String(child.attribs.src);
-              if (child.attribs.src.includes('http')) {
-                description += child.attribs.src + '\n\n';
-              } else if(!src.startsWith('data:image')){
-                let src = String(child.attribs.src);
-                if(src.startsWith('/')){
-                  description += domain + child.attribs.src + '\n\n';
-                }else{
-                  description += domainForImg + child.attribs.src + '\n\n';
+              let src = child.attribs.src? String(child.attribs.src) : '';
+              if(src){
+                description += '\n\nここに画像があります。\n';
+                if (src.includes('http')) {
+                  description += src + '\n\n';
+                } else if(!src.startsWith('data:image')){
+                  if(src.startsWith('/')){
+                    description += domain + src + '\n\n';
+                  }else{
+                    description += domainForImg + src + '\n\n';
+                  }
                 }
               }
             }
