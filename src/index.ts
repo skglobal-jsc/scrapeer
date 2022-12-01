@@ -81,17 +81,17 @@ const parseImage = (
   let domain = new URL(loadedUrl).origin + '/';
 
   let textContent = '';
-  if ((element as any).attribs.href && (element as any).attribs.alt !== 'pdf') {
+  if ((element as any).attribs.alt && (element as any).attribs.alt !== 'pdf') {
     textContent +=
       '\n\nここに「' +
       (element as any).attribs.alt +
       '」の画像があります。' +
       '\n';
-
-    if ((element as any).attribs.src.includes('http')) {
-      textContent += (element as any).attribs.src + '\n\n';
-    } else {
-      textContent += domain + (element as any).attribs.src + '\n\n';
+      let src = String((element as any).attribs.src) || '';
+    if (src.includes('http')) {
+      textContent += src + '\n\n';
+    } else if(!src.startsWith('data:image')){
+      textContent += domain + src + '\n\n';
     }
   }
 
@@ -230,10 +230,10 @@ const parseParagraph = (
               child.attribs.alt +
               '」の画像があります。' +
               '\n';
-
-            if (child.attribs.src.includes('http')) {
+            let src = child.attribs.src || '';
+            if (src.includes('http')) {
               description += child.attribs.src + '\n\n';
-            } else {
+            } else if(!src.startsWith('data:image')){
               let src = String(child.attribs.src);
                 if(src.startsWith('/')){
                   description += domain + src + '\n\n';
@@ -244,10 +244,10 @@ const parseParagraph = (
           } else {
             if (!child.attribs.alt) {
               description += '\n\nここに画像があります。\n';
-
+              let src = String(child.attribs.src);
               if (child.attribs.src.includes('http')) {
                 description += child.attribs.src + '\n\n';
-              } else {
+              } else if(!src.startsWith('data:image')){
                 let src = String(child.attribs.src);
                 if(src.startsWith('/')){
                   description += domain + child.attribs.src + '\n\n';
