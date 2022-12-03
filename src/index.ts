@@ -95,6 +95,10 @@ const parseImage = (
     }
   }
 
+  if(isIgnoreText(textContent)){
+    textContent = '';
+  }
+
   return textContent;
 };
 
@@ -126,7 +130,7 @@ const parseParagraph = (
       // console.log('data', child.data);
 
       if (tagType == 'text') {
-        if (child.data) {
+        if (child.data && !isIgnoreText(child.data)) {
           description += child.data;
         }
         continue;
@@ -142,24 +146,25 @@ const parseParagraph = (
           }
 
           const href = child.attribs.href? String(child.attribs.href) : '';
-          if (href.includes(text_a)) {
-            if (href.includes('https://get.adobe.com/jp/reader/')) {
-              continue;
-            }
-            if (href.includes('http')) {
-              link = ' - ' + href + ' ';
-            } else {
-              if (
-                !href.includes('/') &&
-                href.includes('#')
-              ) {
-                link = ' - ' + loadedUrl + href + ' ';
+          if(href){
+            if (!href.includes(text_a)) {
+              if (href.includes('https://get.adobe.com/jp/reader/')) {
+                continue;
+              }
+              if (href.includes('http')) {
+                link = ' - ' + href + ' ';
               } else {
-                link = ' - ' + domain + href + ' ';
+                if (
+                  !href.includes('/') &&
+                  href.includes('#')
+                ) {
+                  link = ' - ' + loadedUrl + href + ' ';
+                } else {
+                  link = ' - ' + domain + href + ' ';
+                }
               }
             }
           }
-
           if (link.includes('javascript') || link.includes('#')) {
             link = '';
           } else {
@@ -229,6 +234,10 @@ const parseParagraph = (
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
 
             let src = child.attribs.src ? String(child.attribs.src) : '';
+
+            if(isIgnoreText(src) || isIgnoreText(child.attribs.alt)){
+              continue;
+            }
             if(src){
               description +=
               '\n\nここに「' +
@@ -372,12 +381,12 @@ const parseTable = (
 };
 
 const isIgnoreText = (text: string): boolean => {
-  //ignore social area in https://www.city.sapporo.jp/
-  if(text.includes('Acrobat Reader') ||
-    text.includes('Adobe Reader') ||
+  if(text.includes('Acrobat') ||
+    text.includes('Adobe') ||
       text.includes('adobe.com/jp') ||
       text.includes('function(') ||
       text.includes('connect.facebook.net') ||
+      text.includes('javascript') ||
       text.toLowerCase().includes('line-website.com') ||
       text.toLowerCase().includes('document.write(') ||
       text.toLowerCase().includes('twitter.com')||
