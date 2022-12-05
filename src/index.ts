@@ -516,22 +516,22 @@ const generateDescriptionFromDom = (
   const $content = $clone(contentSector);
 
   if (titleEle) {
-    const $titleEle = $clone(titleEle);
-    $content.find('*').each((i, child) => {
-      const $child = $clone(child);
-      if (child.type === 'tag') {
-        // loop until meet the title element
-        if ($titleEle.is($child)) {
-          console.log('Found title element, break');
-          return false;
-        } else {
-          // if not titleEle, remove it
-          $child.remove();
-        }
-      }
+    // const $titleEle = $clone(titleEle);
+    // $content.find('*').each((i, child) => {
+    //   const $child = $clone(child);
+    //   if (child.type === 'tag') {
+    //     // loop until meet the title element
+    //     if ($titleEle.is($child)) {
+    //       console.log('Found title element, break');
+    //       return false;
+    //     } else {
+    //       // if not titleEle, remove it
+    //       $child.remove();
+    //     }
+    //   }
 
-      return true;
-    });
+    //   return true;
+    // });
   }
 
   let description = cleanText(extractTextFromDom($clone, $content, item));
