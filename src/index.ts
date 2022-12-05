@@ -6,6 +6,8 @@ import {
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
 
+const cheerio = require('cheerio');
+
 interface IArticle {
   id: string;
   title: string;
@@ -511,7 +513,7 @@ const generateDescriptionFromDom = (
   titleEle?: any
 ): any => {
   // make a clone of the cheerio object
-  const $$ = $.load($.html());
+  const $$ = cheerio.load($.html());
   const $content = $$(contentSector);
 
   if (titleEle) {
