@@ -31,7 +31,7 @@ const mockArticle = {
       const $ = cheerio.load(res.data);
       // const content: any = '.txtbox';
       const content: any = '#honContents';
-      const titleEle = '#honContents > div.pageHead.bodyPage > div > h1';
+      const titleEle = '#honContents > div:nth-child(2) > div > h1:nth-child(2)';
       const result = generateDescriptionFromDom(
         $,
         mockArticle,

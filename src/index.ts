@@ -510,12 +510,14 @@ const generateDescriptionFromDom = (
   contentSector: string = 'body',
   titleEle?: any
 ): any => {
-  const $content = $(contentSector);
+  // make a clone of the cheerio object
+  const $$ = $.load($.html());
+  const $content = $$(contentSector);
 
   if (titleEle) {
-    const $titleEle = $(titleEle);
+    const $titleEle = $$(titleEle);
     $content.find('*').each((i, child) => {
-      const $child = $(child);
+      const $child = $$(child);
       if (child.type === 'tag') {
         // loop until meet the title element
         if ($titleEle.is($child)) {
@@ -531,7 +533,7 @@ const generateDescriptionFromDom = (
     });
   }
 
-  let description = cleanText(extractTextFromDom($, $content, item));
+  let description = cleanText(extractTextFromDom($$, $content, item));
   description += '\n\n' + '以上です。';
 
   return description;
