@@ -21,11 +21,7 @@ interface IArticle {
   [key: string]: any;
 }
 
-const parseHref = (
-  $: any,
-  element: any | string,
-  item: IArticle
-): string => {
+const parseHref = ($: any, element: any | string, item: IArticle): string => {
   let description: string = '';
   const { loadedUrl = '' } = item;
   let domain = new URL(loadedUrl).origin + '/';
@@ -58,7 +54,7 @@ const parseHref = (
       if (domElm.attribs.href && !domElm.attribs.href.includes('#')) {
         description += '\n' + domain + domElm.attribs.href + '\n';
       } else {
-        description ='';
+        description = '';
       }
     }
   }
@@ -70,11 +66,7 @@ const parseHref = (
   return description;
 };
 
-const parseImage = (
-  $: any,
-  element: any | string,
-  item: IArticle
-): string => {
+const parseImage = ($: any, element: any | string, item: IArticle): string => {
   const $element = $(element);
   const { loadedUrl = '' } = item;
 
@@ -87,15 +79,15 @@ const parseImage = (
       (element as any).attribs.alt +
       '」の画像があります。' +
       '\n';
-      let src = String((element as any).attribs.src) || '';
+    let src = String((element as any).attribs.src) || '';
     if (src.includes('http')) {
       textContent += src + '\n\n';
-    } else if(!src.startsWith('data:image')){
+    } else if (!src.startsWith('data:image')) {
       textContent += domain + src + '\n\n';
     }
   }
 
-  if(isIgnoreText(textContent)){
+  if (isIgnoreText(textContent)) {
     textContent = '';
   }
 
@@ -111,7 +103,7 @@ const parseParagraph = (
   const { loadedUrl = '' } = item;
 
   let domain = new URL(loadedUrl).origin + '/';
-  let domainForImg = loadedUrl.substring(0, loadedUrl.lastIndexOf('/')+1);
+  let domainForImg = loadedUrl.substring(0, loadedUrl.lastIndexOf('/') + 1);
 
   let description = '';
   var link = '';
@@ -145,8 +137,8 @@ const parseParagraph = (
             text_a = parseParagraph($, child, item);
           }
 
-          const href = child.attribs.href? String(child.attribs.href) : '';
-          if(href){
+          const href = child.attribs.href ? String(child.attribs.href) : '';
+          if (href) {
             if (!href.includes(text_a)) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
                 continue;
@@ -154,10 +146,7 @@ const parseParagraph = (
               if (href.includes('http')) {
                 link = ' - ' + href + ' ';
               } else {
-                if (
-                  !href.includes('/') &&
-                  href.includes('#')
-                ) {
+                if (!href.includes('/') && href.includes('#')) {
                   link = ' - ' + loadedUrl + href + ' ';
                 } else {
                   link = ' - ' + domain + href + ' ';
@@ -176,7 +165,7 @@ const parseParagraph = (
         case 'span':
           const desc_span = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_span)){
+          if (!isIgnoreText(desc_span)) {
             description += desc_span;
           }
           break;
@@ -193,7 +182,7 @@ const parseParagraph = (
         case 'strong':
           const desc_strong = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_strong)){
+          if (!isIgnoreText(desc_strong)) {
             description += desc_strong;
           }
           break;
@@ -204,7 +193,7 @@ const parseParagraph = (
           // }
           const desc_div = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_div)) {
+          if (!isIgnoreText(desc_div)) {
             description += desc_div;
           }
 
@@ -212,7 +201,7 @@ const parseParagraph = (
         case 'p':
           const desc_p = parseParagraph($, child, item) + '\n';
 
-          if(!isIgnoreText(desc_p)){
+          if (!isIgnoreText(desc_p)) {
             description += desc_p;
           }
 
@@ -230,42 +219,40 @@ const parseParagraph = (
           //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
-
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
-
             let src = child.attribs.src ? String(child.attribs.src) : '';
 
-            if(isIgnoreText(src) || isIgnoreText(child.attribs.alt)){
+            if (isIgnoreText(src) || isIgnoreText(child.attribs.alt)) {
               continue;
             }
-            if(src){
+            if (src) {
               description +=
-              '\n\nここに「' +
-              child.attribs.alt +
-              '」の画像があります。' +
-              '\n';
+                '\n\nここに「' +
+                child.attribs.alt +
+                '」の画像があります。' +
+                '\n';
 
               if (src.includes('http')) {
                 description += src + '\n\n';
-              } else if(!src.startsWith('data:image')){
-                  if(src.startsWith('/')){
-                    description += domain + src + '\n\n';
-                  }else{
-                    description += domainForImg + src + '\n\n';
-                  }
+              } else if (!src.startsWith('data:image')) {
+                if (src.startsWith('/')) {
+                  description += domain + src + '\n\n';
+                } else {
+                  description += domainForImg + src + '\n\n';
+                }
               }
             }
           } else {
             if (!child.attribs.alt) {
-              let src = child.attribs.src? String(child.attribs.src) : '';
-              if(src){
+              let src = child.attribs.src ? String(child.attribs.src) : '';
+              if (src) {
                 description += '\n\nここに画像があります。\n';
                 if (src.includes('http')) {
                   description += src + '\n\n';
-                } else if(!src.startsWith('data:image')){
-                  if(src.startsWith('/')){
+                } else if (!src.startsWith('data:image')) {
+                  if (src.startsWith('/')) {
                     description += domain + src + '\n\n';
-                  }else{
+                  } else {
                     description += domainForImg + src + '\n\n';
                   }
                 }
@@ -381,16 +368,18 @@ const parseTable = (
 };
 
 const isIgnoreText = (text: string): boolean => {
-  if(text.includes('Acrobat') ||
+  if (
+    text.includes('Acrobat') ||
     text.includes('Adobe') ||
-      text.includes('adobe.com/jp') ||
-      text.includes('function(') ||
-      text.includes('connect.facebook.net') ||
-      text.includes('javascript') ||
-      text.toLowerCase().includes('line-website.com') ||
-      text.toLowerCase().includes('document.write(') ||
-      text.toLowerCase().includes('twitter.com')||
-      text.toLowerCase().includes('hatena')){
+    text.includes('adobe.com/jp') ||
+    text.includes('function(') ||
+    text.includes('connect.facebook.net') ||
+    text.includes('javascript') ||
+    text.toLowerCase().includes('line-website.com') ||
+    text.toLowerCase().includes('document.write(') ||
+    text.toLowerCase().includes('twitter.com') ||
+    text.toLowerCase().includes('hatena')
+  ) {
     return true;
   }
 
@@ -416,7 +405,9 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   } else if (
     element.attribs &&
     element.attribs.class &&
-    (element.attribs.class.includes('pdf_download') || element.attribs.class.includes('adobeReader') || element.attribs.class.includes('adobe-reader'))
+    (element.attribs.class.includes('pdf_download') ||
+      element.attribs.class.includes('adobeReader') ||
+      element.attribs.class.includes('adobe-reader'))
   ) {
     return true;
   } else if (
@@ -433,11 +424,7 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   return false;
 };
 
-const extractTextFromDom = (
-  $: any,
-  $el: any,
-  item: IArticle
-) => {
+const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
   let description = '';
   if (!$el) return '';
 
@@ -526,17 +513,26 @@ const generateDescriptionFromDom = (
   const $content = $(contentSector);
 
   if (titleEle) {
-    const $title = $(titleEle);
+    const $titleEle = $(titleEle);
+    $content.find('*').each((i, child) => {
+      const $child = $(child);
+      if (child.type === 'tag') {
+        // loop until meet the title element
+        if ($titleEle.is($child)) {
+          console.log('Found title element, break');
+          return false;
+        } else {
+          // if not titleEle, remove it
+          $child.remove();
+        }
+      }
 
-    // find all elements before the title element and remove them
-    $title.prevAll().remove();
-
-    // also remove title element to make sure it is not part of the description
-    $title.remove();
+      return true;
+    });
   }
 
   let description = cleanText(extractTextFromDom($, $content, item));
-  description += '\n\n' + '以上です。'
+  description += '\n\n' + '以上です。';
 
   return description;
 };
