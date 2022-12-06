@@ -114,65 +114,57 @@ const getArticleDescription = ({ $, article }) => {
   };
 
   const parseArticleDescription = (titleCssPath, label = 'SNS') => {
-    let articleCssPath = null;
-    let description = null;
+    let articleCssPath = '';
+    let description = '';
 
-    if (!titleCssPath) {
-      return { articleCssPath, description };
-    }
-
-    if (titleCssPath === 'body') {
-      description = generateDescriptionFromDom($, article, titleCssPath);
-      return { articleCssPath: titleCssPath, description };
-    }
-
-    let currentEl = $(titleCssPath).parent();
+    let titleElement = $(titleCssPath);
     while (true) {
-      // if current element is body, then we are done
-      if (currentEl.is('body')) {
-        break;
-      }
+      // from titleCssPath, we can find the parent element of the article
+      let parentEle = $(titleElement).parent();
 
-      // if no parent, then we are done
-      if (!currentEl.parent().length) {
-        break;
-      }
-
-      // let build selector from the current element
-      articleCssPath = $(currentEl).getUniqueSelector();
-      // parse the description from the selector by SKG common function
-      let text = generateDescriptionFromDom(
+      // try to parse description from the parent element
+      description = generateDescriptionFromDom(
         $,
         article,
-        articleCssPath!,
-        titleCssPath
+        $(parentEle).getUniqueSelector(), // this is articleCssPath
+        $(titleElement).getUniqueSelector() // this is titleCssPath
       );
 
       // remove base64 images
-      text = text.replace(/data:image\/(png|jpg|jpeg);base64,([^"]+)/g, '');
-      // if we found the description with at least 100 characters, then we are done
-      if (text && text.length > MIN_LENGTH) {
+      description = description.replace(
+        /data:image\/(png|jpg|jpeg);base64,([^"]+)/g,
+        ''
+      );
+
+      // if we can find the description at a least 100 characters, then we can assume this is the article
+      if (description && description.length >= 100) {
         console.log(
-          `[${label}]`,
-          'We found the article selector is',
-          `[${articleCssPath}]`,
-          article.URL
+          'parsing description from:',
+          $(parentEle).getUniqueSelector(),
+          'with title:',
+          $(titleCssPath).getUniqueSelector(),
+          'result:',
+          description
         );
-        description = text;
+        articleCssPath = parentEle.getUniqueSelector();
         break;
       }
 
-      // try to go up to the parent element until parent is body
-      currentEl = $(currentEl).parent();
+      // if we can't find the description, then we need to find the parent of the parent
+      titleElement = parentEle;
     }
 
-    return { articleCssPath, description };
+    return {
+      articleCssPath,
+      description,
+    };
   };
 
   let res = {
-    description: null,
+    description: '',
+    articleCssPath: '',
   }; // result object
-  const MIN_LENGTH = 100; // minimum length of the description
+
   // 1. Try to find break element first
   const breakElement = findBreakElement();
   if (breakElement) {
@@ -188,35 +180,21 @@ const getArticleDescription = ({ $, article }) => {
     }
   }
 
-  // 3. If we can't find the title of the article, then we try to find the share buttons
-  if (!res.description) {
-    const shareButton = findShareButtons();
-    if (shareButton) {
-      res = parseArticleDescription($(shareButton), 'Share Button');
-    }
-  }
-
-  // 4. if we can not find the title, we can get the 'id = main', 'id = content', 'id = article' element
+  // 3. if we can not find the title, we can get the 'id = main', 'id = content', 'id = article' element
   if (!res.description) {
     // check ids in the order of main, content, article
     const ids = ['main', 'content', 'article'];
     ids.forEach((id) => {
       const el = $(`#${id}`);
       if (el.length > 0) {
-        res = parseArticleDescription($(el), 'ID');
+        const description = generateDescriptionFromDom($, article, $(el));
+        res.description = description;
+        res.articleCssPath = $(el).getUniqueSelector();
         return false;
       }
 
       return true;
     });
-  }
-
-  // 5. Finally, we try to find the first h1 element
-  if (!res.description) {
-    const el = $('h1').first();
-    if (el.length > 0) {
-      res = parseArticleDescription($(el), 'First H1');
-    }
   }
 
   return res;

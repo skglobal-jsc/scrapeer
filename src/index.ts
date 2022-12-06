@@ -510,8 +510,6 @@ const generateDescriptionFromDom = (
   contentSector: string = 'body',
   titleEle?: any
 ): any => {
-  const strHtml = $.html();
-  const $clone = cheerio.load(strHtml);
   const $content = $(contentSector);
 
   if (titleEle) {
@@ -521,11 +519,12 @@ const generateDescriptionFromDom = (
       if (child.type === 'tag') {
         // loop until meet the title element
         if ($titleEle.is($child)) {
-          console.log('Found title element, break');
+          // remove itself
+          $child.remove();
           return false;
         } else {
           // if not titleEle, remove it
-          // $child.remove();
+          $child.remove();
         }
       }
 
