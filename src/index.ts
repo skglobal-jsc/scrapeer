@@ -159,6 +159,9 @@ const parseParagraph = (
         case 'h3':
         case 'h4':
         case 'h5':
+        case 'header':
+        case 'section':
+        case 'article':
           description += '\n' + parseParagraph($, child, item) + '\n';
           break;
         // case 'li':
@@ -172,10 +175,6 @@ const parseParagraph = (
           }
           break;
         case 'div':
-          //ignore social area in https://www.city.sapporo.jp/
-          // if (isIgnoreTag(child as any, loadedUrl)) {
-          //   continue;
-          // }
           const desc_div = parseParagraph($, child, item);
 
           if (!isIgnoreText(desc_div)) {
@@ -196,6 +195,13 @@ const parseParagraph = (
           break;
         case 'ol':
           description += parseOLComponent($, child, item);
+          break;
+        case 'td':
+        case 'th':
+        case 'dl':
+        case 'dd':
+        case 'dt':
+          description += parseParagraph($, child, item);
           break;
         case 'ul':
           description += parseULComponent($, child, item);
@@ -408,74 +414,14 @@ const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
   if (!$el) return '';
 
   // get children
-  const $children = $el.children();
-
+  const $children = $el;
   // if there are no children, return the text
   if ($children.length === 0) {
     description += cleanText($el.text());
   } else {
     // if there are children, get the text from each child
     $children.each((i, child) => {
-      const $child = $el.children().eq(i);
-      // if the child is a text node, return the text
-      const tagName = $child.prop('tagName');
-      switch (tagName) {
-        case 'BR':
-          description += '\n';
-          break;
-        case 'TEXT':
-          description += $child.text();
-          break;
-        case 'A':
-          description += parseHref($, child, item);
-          break;
-        case 'IMG':
-          description += parseImage($, child, item);
-          break;
-        case 'TABLE':
-          description += getTableDescription(parseTable($, child, item));
-          break;
-        // case 'FORM':
-        //   description = `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
-        //   break;
-        case 'H2':
-          description += '●' + parseParagraph($, child, item) + '\n';
-          break;
-        case 'P':
-        case 'DIV':
-          const { loadedUrl = '' } = item;
-          if (isIgnoreTag(child as any, loadedUrl)) {
-            break;
-          }
-          description += parseParagraph($, child, item) + '\n';
-          break;
-        case 'OL':
-          description += parseOLComponent($, child, item) + '\n';
-          break;
-        case 'UL':
-          description += parseULComponent($, child, item) + '\n';
-          break;
-        case 'H1':
-        case 'H3':
-        case 'H4':
-        case 'H5':
-        case 'HEADER':
-        case 'SPAN':
-          description += parseParagraph($, child, item) + '\n';
-          break;
-        case 'TD':
-        case 'TH':
-        case 'DL':
-        case 'DD':
-        case 'DT':
-        case 'SECTION':
-        case 'ARTICLE':
-          description += extractTextFromDom($, $child, item) + '\n';
-          break;
-        default:
-          description += parseParagraph($, child, item) + '\n';
-          break;
-      }
+      description += parseParagraph($, child, item);
     });
   }
   return description;
@@ -487,9 +433,8 @@ const generateDescriptionFromDom = (
   contentSector: string = 'body',
   titleEle?: any
 ): any => {
-
-  const strHtml = $('body').html()
-  const $clone = cheerio.load(strHtml)
+  const strHtml = $('body').html();
+  const $clone = cheerio.load(strHtml);
   const $content = $clone(contentSector);
 
   if (titleEle) {
