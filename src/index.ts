@@ -510,31 +510,30 @@ const generateDescriptionFromDom = (
   contentSector: string = 'body',
   titleEle?: any
 ): any => {
-
-  const strHtml = $('body').html()
-  const $clone = cheerio.load(strHtml)
-  const $content = $clone(contentSector);
+  const strHtml = $.html();
+  const $clone = cheerio.load(strHtml);
+  const $content = $(contentSector);
 
   if (titleEle) {
-    // const $titleEle = $clone(titleEle);
-    // $content.find('*').each((i, child) => {
-    //   const $child = $clone(child);
-    //   if (child.type === 'tag') {
-    //     // loop until meet the title element
-    //     if ($titleEle.is($child)) {
-    //       console.log('Found title element, break');
-    //       return false;
-    //     } else {
-    //       // if not titleEle, remove it
-    //       $child.remove();
-    //     }
-    //   }
+    const $titleEle = $(titleEle);
+    $content.find('*').each((i, child) => {
+      const $child = $(child);
+      if (child.type === 'tag') {
+        // loop until meet the title element
+        if ($titleEle.is($child)) {
+          console.log('Found title element, break');
+          return false;
+        } else {
+          // if not titleEle, remove it
+          // $child.remove();
+        }
+      }
 
-    //   return true;
-    // });
+      return true;
+    });
   }
 
-  let description = cleanText(extractTextFromDom($clone, $content, item));
+  let description = cleanText(extractTextFromDom($, $content, item));
   description += '\n\n' + '以上です。';
 
   return description;

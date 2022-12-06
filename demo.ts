@@ -1,44 +1,280 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { generateDescriptionFromDom } from './src/index';
+import * as stringSimilarity from 'string-similarity';
 
-// const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
-//http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
-const url = 'https://www.city.hitachi.lg.jp/shimin/002/006/singata.html';
-const mockArticle = {
-  id: 'test',
-  title: 'test',
-  URL: 'test',
-  crawledAt: new Date().toISOString(),
-  publishDate: new Date().toISOString(),
-  description: 'test',
-  loadedUrl: url,
+const getElementSelector = (el) => {
+  if (el.attr('id')) {
+    return '#' + el.attr('id');
+  } else {
+    const tagName = el.get(0).tagName.toLowerCase();
+
+    if (tagName === 'body') {
+      return tagName;
+    }
+
+    const siblings = el.siblings();
+
+    // If there is only one element with this tag name, we don't need to specify the index
+    if (siblings.length === 0) {
+      return tagName;
+    }
+
+    // If there are multiple elements with this tag name, we need to specify the index
+    const index = el.index();
+
+    if (el.index() === 0) {
+      return tagName + ':first-child';
+    }
+    if (el.index() === siblings.length) {
+      return tagName + ':last-child';
+    }
+
+    return tagName + ':nth-child(' + (index + 1) + ')';
+  }
 };
-(() => {
-  // console.log('Hello world');
-  //https://kankou-iwaki.or.jp/event/51384
 
-  // const url =
-  //   'https://www.city.iwaki.lg.jp/www/contents/1664953386672/index.html';
+const getArticleDescription = ({ $, article }) => {
+  const findBreakElement = () => {
+    let ele = null;
 
-  // const url = 'https://kankou-iwaki.or.jp/event/50968';
+    // break element may be a <hr> or <div> with some predefined text
+    const breakingTexts = [
+      '本文',
+      '本文ここから',
+      'ページの本文です',
+      'ここから本文です',
+    ];
+    breakingTexts.forEach((text) => {
+      const el = $(`*:contains("${text}")`)
+        .filter((el) => {
+          return $(el).text() === text;
+        })
+        .first();
+      if (el.length > 0) {
+        // if we found the breaking text, then we can assume content of article is parent of this element
+        ele = el;
+      }
+    });
 
-  axios
-    .get(url, {
-      insecureHTTPParser: true,
-    })
-    .then((res) => {
-      const $ = cheerio.load(res.data);
-      // const content: any = '.txtbox';
-      const content: any = '#honContents';
-      const titleEle = '#honContents > div:nth-child(2) > div > h1:nth-child(2)';
-      const result = generateDescriptionFromDom(
+    // it also possible that a small image but have alt text is "本文ここから" or "本文"
+    // in this case, we need to find all images have alt text and check if the alt text is in the breakingTexts
+    if (!ele) {
+      $('body img[alt]').each((_, img) => {
+        // get the alt text
+        const altText = $(img).attr('alt');
+        // check if the alt text is in the breakingTexts
+        if (breakingTexts.includes(altText)) {
+          ele = img;
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    return ele;
+  };
+
+  const findTitleCssPath = () => {
+    let titleCssPath = null;
+
+    // 1. we try to guess which element contains the title of the article
+    $('h1, h2').each((_, el) => {
+      const text = $(el).text().trim();
+      const match = stringSimilarity.compareTwoStrings(article.title, text);
+      if (match >= 0.6) {
+        titleCssPath = $(el).getUniqueSelector();
+        console.log(
+          `[Title]`,
+          'We found the title selector is',
+          titleCssPath,
+          'with match',
+          match
+        );
+        return false;
+      }
+
+      return true;
+    });
+
+    return titleCssPath;
+  };
+
+  const findShareButtons = () => {
+    let shareButton = null;
+    // find all twitter/facebook share buttons
+    $(
+      'a[href*="twitter.com/share"], a[href*="facebook.com/share"], a[href*="twitter.com/intent/tweet"]'
+    ).each((_, el) => {
+      shareButton = $(el).getUniqueSelector();
+      return false;
+    });
+    return shareButton;
+  };
+
+  const parseArticleDescription = (titleCssPath, label = 'SNS') => {
+    let articleCssPath = null;
+    let description = null;
+
+    if (!titleCssPath) {
+      return { articleCssPath, description };
+    }
+
+    if (titleCssPath === 'body') {
+      description = generateDescriptionFromDom($, article, titleCssPath);
+      return { articleCssPath: titleCssPath, description };
+    }
+
+    let currentEl = $(titleCssPath).parent();
+    while (true) {
+      // if current element is body, then we are done
+      if (currentEl.is('body')) {
+        break;
+      }
+
+      // if no parent, then we are done
+      if (!currentEl.parent().length) {
+        break;
+      }
+
+      // let build selector from the current element
+      articleCssPath = $(currentEl).getUniqueSelector();
+      // parse the description from the selector by SKG common function
+      let text = generateDescriptionFromDom(
         $,
-        mockArticle,
-        content,
-        titleEle
+        article,
+        articleCssPath!,
+        titleCssPath
       );
 
-      console.log(result);
+      // remove base64 images
+      text = text.replace(/data:image\/(png|jpg|jpeg);base64,([^"]+)/g, '');
+      // if we found the description with at least 100 characters, then we are done
+      if (text && text.length > MIN_LENGTH) {
+        console.log(
+          `[${label}]`,
+          'We found the article selector is',
+          `[${articleCssPath}]`,
+          article.URL
+        );
+        description = text;
+        break;
+      }
+
+      // try to go up to the parent element until parent is body
+      currentEl = $(currentEl).parent();
+    }
+
+    return { articleCssPath, description };
+  };
+
+  let res = {
+    description: null,
+  }; // result object
+  const MIN_LENGTH = 100; // minimum length of the description
+  // 1. Try to find break element first
+  const breakElement = findBreakElement();
+  if (breakElement) {
+    // if we found the break element, then we can assume content of article is parent of this element
+    res = parseArticleDescription($(breakElement), 'Break Element');
+  }
+
+  // 2. If we can't find break element, then we try to find the title of the article
+  if (!res.description) {
+    const titleCssPath = findTitleCssPath();
+    if (titleCssPath) {
+      res = parseArticleDescription($(titleCssPath), 'Title');
+    }
+  }
+
+  // 3. If we can't find the title of the article, then we try to find the share buttons
+  if (!res.description) {
+    const shareButton = findShareButtons();
+    if (shareButton) {
+      res = parseArticleDescription($(shareButton), 'Share Button');
+    }
+  }
+
+  // 4. if we can not find the title, we can get the 'id = main', 'id = content', 'id = article' element
+  if (!res.description) {
+    // check ids in the order of main, content, article
+    const ids = ['main', 'content', 'article'];
+    ids.forEach((id) => {
+      const el = $(`#${id}`);
+      if (el.length > 0) {
+        res = parseArticleDescription($(el), 'ID');
+        return false;
+      }
+
+      return true;
     });
+  }
+
+  // 5. Finally, we try to find the first h1 element
+  if (!res.description) {
+    const el = $('h1').first();
+    if (el.length > 0) {
+      res = parseArticleDescription($(el), 'First H1');
+    }
+  }
+
+  return res;
+};
+// const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
+//http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
+const url = 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html';
+const mockArticle = {
+  title:
+    '日立市｜令和4年12月11日執行　茨城県議会議員一般選挙における期日前投票の状況について',
+  publishDate: '令和4年12月6日（火曜日）',
+  author: [],
+  publisher: null,
+  thumbnailURL: null,
+  keywords:
+    '茨城県, 日立市, 市役所, ひたち, Hitachi, 選挙,日立市選挙管理員会,参議院,参議選,参院選,',
+  description:
+    '令和4年12月11日執行の茨城県議会議員一般選挙における期日前投票の状況についてお知らせします。',
+  originalType: 'text/html',
+  taskId: 'c-shinjukuku',
+  gscType: 'NEWS',
+  crawledAt: '2022-12-06T02:23:41.764Z',
+  id: 'c-shinjukuku-aHR0cHM6Ly93d3cuY2l0eS5oaXRhY2hpLmxnLmpwL3NoaW1pbi8wMDgvMDAyL3AxMTA5MTEuaHRtbA',
+  language: 'ja',
+  URL: 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html',
+  loadedUrl: 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html',
+};
+(async () => {
+  const res = await axios.get(url, {
+    insecureHTTPParser: true,
+  });
+
+  const $ = cheerio.load(res.data);
+
+  $.prototype.getUniqueSelector = function () {
+    let el = this;
+    let parents = el.parents();
+    if (!parents[0]) {
+      // Element doesn't have any parents
+      return ':root';
+    }
+    let selector = getElementSelector(el);
+    let i = 0;
+    let elementSelector;
+
+    if (selector[0] === '#' || selector === 'body') {
+      return selector;
+    }
+
+    do {
+      elementSelector = getElementSelector($(parents[i]));
+      selector = elementSelector + ' > ' + selector;
+      i++;
+    } while (i < parents.length - 1 && elementSelector[0] !== '#'); // Stop before we reach the html element parent
+    return selector;
+  };
+
+  // TODO, testing
+  const result = getArticleDescription({ $, article: mockArticle });
+  console.log(result);
 })();
