@@ -367,6 +367,7 @@ const isIgnoreText = (text: string): boolean => {
     text.includes('adobe.com/jp') ||
     text.includes('function(') ||
     text.includes('connect.facebook.net') ||
+    text.includes('facebook.com/share') ||
     text.includes('javascript') ||
     text.toLowerCase().includes('line-website.com') ||
     text.toLowerCase().includes('document.write(') ||
