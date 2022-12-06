@@ -21,14 +21,10 @@ interface IArticle {
   [key: string]: any;
 }
 
-const parseHref = (
-  $: any,
-  element: any | string,
-  item: IArticle
-): string => {
+const parseHref = ($: any, element: any | string, item: IArticle): string => {
   let description: string = '';
   const { loadedUrl = '' } = item;
-  let domain = new URL(loadedUrl).origin + '/';
+  // let domain = new URL(loadedUrl).origin + '/';
 
   let domElm = element as any;
   let text_a = '';
@@ -45,20 +41,11 @@ const parseHref = (
     if (domElm.attribs.href && domElm.attribs.href.includes('http')) {
       description += '\n' + domElm.attribs.href + '\n';
     } else {
-      // if (
-      //   !domElm.attribs.href.includes('/') &&
-      //   domElm.attribs.href.includes('#')
-      // ) {
-      //   description += '\n' + loadedUrl + domElm.attribs.href + '\n';
-      // } else {
-      //   //TODO domain name extraction
-      //   description += '\n' + domain + domElm.attribs.href + '\n';
-      // }
-
       if (domElm.attribs.href && !domElm.attribs.href.includes('#')) {
-        description += '\n' + domain + domElm.attribs.href + '\n';
+        const path = new URL(domElm.attribs.href, loadedUrl);
+        description += '\n' + path.href + '\n';
       } else {
-        description ='';
+        description = '';
       }
     }
   }
@@ -70,15 +57,9 @@ const parseHref = (
   return description;
 };
 
-const parseImage = (
-  $: any,
-  element: any | string,
-  item: IArticle
-): string => {
+const parseImage = ($: any, element: any | string, item: IArticle): string => {
   const $element = $(element);
   const { loadedUrl = '' } = item;
-
-  let domain = new URL(loadedUrl).origin + '/';
 
   let textContent = '';
   if ((element as any).attribs.alt && (element as any).attribs.alt !== 'pdf') {
@@ -87,15 +68,16 @@ const parseImage = (
       (element as any).attribs.alt +
       '」の画像があります。' +
       '\n';
-      let src = String((element as any).attribs.src) || '';
+    let src = String((element as any).attribs.src) || '';
     if (src.includes('http')) {
       textContent += src + '\n\n';
-    } else if(!src.startsWith('data:image')){
-      textContent += domain + src + '\n\n';
+    } else if (!src.startsWith('data:image')) {
+      const path = new URL(src, loadedUrl);
+      textContent += path.href + '\n\n';
     }
   }
 
-  if(isIgnoreText(textContent)){
+  if (isIgnoreText(textContent)) {
     textContent = '';
   }
 
@@ -109,9 +91,6 @@ const parseParagraph = (
 ): string => {
   const $element = element as any;
   const { loadedUrl = '' } = item;
-
-  let domain = new URL(loadedUrl).origin + '/';
-  let domainForImg = loadedUrl.substring(0, loadedUrl.lastIndexOf('/')+1);
 
   let description = '';
   var link = '';
@@ -145,8 +124,8 @@ const parseParagraph = (
             text_a = parseParagraph($, child, item);
           }
 
-          const href = child.attribs.href? String(child.attribs.href) : '';
-          if(href){
+          const href = child.attribs.href ? String(child.attribs.href) : '';
+          if (href) {
             if (!href.includes(text_a)) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
                 continue;
@@ -154,14 +133,8 @@ const parseParagraph = (
               if (href.includes('http')) {
                 link = ' - ' + href + ' ';
               } else {
-                if (
-                  !href.includes('/') &&
-                  href.includes('#')
-                ) {
-                  link = ' - ' + loadedUrl + href + ' ';
-                } else {
-                  link = ' - ' + domain + href + ' ';
-                }
+                const path = new URL(href, loadedUrl);
+                link = ' - ' + path.href + ' ';
               }
             }
           }
@@ -176,10 +149,12 @@ const parseParagraph = (
         case 'span':
           const desc_span = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_span)){
+          if (!isIgnoreText(desc_span)) {
             description += desc_span;
           }
           break;
+        case 'h2':
+          description += '●' + parseParagraph($, child, item) + '\n';
           break;
         case 'h1':
         case 'h3':
@@ -193,7 +168,7 @@ const parseParagraph = (
         case 'strong':
           const desc_strong = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_strong)){
+          if (!isIgnoreText(desc_strong)) {
             description += desc_strong;
           }
           break;
@@ -204,7 +179,7 @@ const parseParagraph = (
           // }
           const desc_div = parseParagraph($, child, item);
 
-          if(!isIgnoreText(desc_div)) {
+          if (!isIgnoreText(desc_div)) {
             description += desc_div;
           }
 
@@ -212,7 +187,7 @@ const parseParagraph = (
         case 'p':
           const desc_p = parseParagraph($, child, item) + '\n';
 
-          if(!isIgnoreText(desc_p)){
+          if (!isIgnoreText(desc_p)) {
             description += desc_p;
           }
 
@@ -230,51 +205,43 @@ const parseParagraph = (
           //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
-
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
-
             let src = child.attribs.src ? String(child.attribs.src) : '';
 
-            if(isIgnoreText(src) || isIgnoreText(child.attribs.alt)){
+            if (isIgnoreText(src) || isIgnoreText(child.attribs.alt)) {
               continue;
             }
-            if(src){
+            if (src) {
               description +=
-              '\n\nここに「' +
-              child.attribs.alt +
-              '」の画像があります。' +
-              '\n';
+                '\n\nここに「' +
+                child.attribs.alt +
+                '」の画像があります。' +
+                '\n';
 
               if (src.includes('http')) {
                 description += src + '\n\n';
-              } else if(!src.startsWith('data:image')){
-                  if(src.startsWith('/')){
-                    description += domain + src + '\n\n';
-                  }else{
-                    description += domainForImg + src + '\n\n';
-                  }
+              } else if (!src.startsWith('data:image')) {
+                const path = new URL(src, loadedUrl);
+                description += path.href + '\n\n';
               }
             }
           } else {
             if (!child.attribs.alt) {
-              let src = child.attribs.src? String(child.attribs.src) : '';
-              if(src){
+              let src = child.attribs.src ? String(child.attribs.src) : '';
+              if (src) {
                 description += '\n\nここに画像があります。\n';
                 if (src.includes('http')) {
                   description += src + '\n\n';
-                } else if(!src.startsWith('data:image')){
-                  if(src.startsWith('/')){
-                    description += domain + src + '\n\n';
-                  }else{
-                    description += domainForImg + src + '\n\n';
-                  }
+                } else if (!src.startsWith('data:image')) {
+                  const path = new URL(src, loadedUrl);
+                  description += path.href + '\n\n';
                 }
               }
             }
           }
           break;
         default:
-          description += extractTextFromDom($, $(child), item);
+          description += parseParagraph($, $(child), item);
           break;
       }
     }
@@ -381,16 +348,18 @@ const parseTable = (
 };
 
 const isIgnoreText = (text: string): boolean => {
-  if(text.includes('Acrobat') ||
+  if (
+    text.includes('Acrobat') ||
     text.includes('Adobe') ||
-      text.includes('adobe.com/jp') ||
-      text.includes('function(') ||
-      text.includes('connect.facebook.net') ||
-      text.includes('javascript') ||
-      text.toLowerCase().includes('line-website.com') ||
-      text.toLowerCase().includes('document.write(') ||
-      text.toLowerCase().includes('twitter.com')||
-      text.toLowerCase().includes('hatena')){
+    text.includes('adobe.com/jp') ||
+    text.includes('function(') ||
+    text.includes('connect.facebook.net') ||
+    text.includes('javascript') ||
+    text.toLowerCase().includes('line-website.com') ||
+    text.toLowerCase().includes('document.write(') ||
+    text.toLowerCase().includes('twitter.com') ||
+    text.toLowerCase().includes('hatena')
+  ) {
     return true;
   }
 
@@ -416,7 +385,9 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   } else if (
     element.attribs &&
     element.attribs.class &&
-    (element.attribs.class.includes('pdf_download') || element.attribs.class.includes('adobeReader') || element.attribs.class.includes('adobe-reader'))
+    (element.attribs.class.includes('pdf_download') ||
+      element.attribs.class.includes('adobeReader') ||
+      element.attribs.class.includes('adobe-reader'))
   ) {
     return true;
   } else if (
@@ -433,11 +404,7 @@ const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
   return false;
 };
 
-const extractTextFromDom = (
-  $: any,
-  $el: any,
-  item: IArticle
-) => {
+const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
   let description = '';
   if (!$el) return '';
 
@@ -453,13 +420,16 @@ const extractTextFromDom = (
       const $child = $el.children().eq(i);
       // if the child is a text node, return the text
       const tagName = $child.prop('tagName');
-
+      console.log('tagName', tagName);
+      console.log('$child.text()', $child.text());
       switch (tagName) {
         case 'BR':
+
           description += '\n';
           break;
         case 'TEXT':
-          description += cleanText($child.text());
+          console.log('TEXT', child.data);
+          description += $child.text();
           break;
         case 'A':
           description += parseHref($, child, item);
@@ -509,7 +479,7 @@ const extractTextFromDom = (
           description += extractTextFromDom($, $child, item) + '\n';
           break;
         default:
-          // description += extractTextFromDom($, $child, item) + '\n';
+          description += parseParagraph($, child, item) + '\n';
           break;
       }
     });
@@ -536,7 +506,7 @@ const generateDescriptionFromDom = (
   }
 
   let description = cleanText(extractTextFromDom($, $content, item));
-  description += '\n\n' + '以上です。'
+  description += '\n\n' + '以上です。';
 
   return description;
 };
