@@ -210,6 +210,14 @@ const parseParagraph = (
           //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
+          if(child.attribs && child.attribs.width && child.attribs.height) {
+            const width = Number(child.attribs.width);
+            const height = Number(child.attribs.height);
+
+            if(width < 30 || height < 30) {
+              continue;
+            }
+          }
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             let src = child.attribs.src ? String(child.attribs.src) : '';
 
