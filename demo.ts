@@ -114,8 +114,8 @@ const getArticleDescription = ({ $, article }) => {
   };
 
   const parseArticleDescription = (titleCssPath, label = 'SNS') => {
-    let articleCssPath = '';
-    let description = '';
+    let articleCssPath: any = null;
+    let description: any = null;
 
     let titleElement = $(titleCssPath);
     while (true) {
@@ -148,6 +148,8 @@ const getArticleDescription = ({ $, article }) => {
         );
         articleCssPath = parentEle.getUniqueSelector();
         break;
+      } else {
+        description = null;
       }
 
       // if we can't find the description, then we need to find the parent of the parent
@@ -201,9 +203,7 @@ const getArticleDescription = ({ $, article }) => {
   if (!res.description) {
     const h1 = $('h1').first();
     if (h1.length > 0) {
-      const description = generateDescriptionFromDom($, article, $(h1));
-      res.description = description;
-      res.articleCssPath = $(h1).getUniqueSelector();
+      res = parseArticleDescription($(h1), 'First H1');
     }
   }
 
@@ -212,6 +212,12 @@ const getArticleDescription = ({ $, article }) => {
     const description = generateDescriptionFromDom($, article, 'body');
     res.description = description;
     res.articleCssPath = 'body';
+    console.log(
+      `[BODY]`,
+      'We found the article selector is',
+      `body`,
+      article.URL
+    );
   }
 
   return res;
