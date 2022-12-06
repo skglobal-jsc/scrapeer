@@ -321,7 +321,7 @@ const parseTable = (
 
     $table.find('th').each((i, col) => {
       const $col = $(col);
-      const text = cleanText($col.text());
+      const text = cleanText(parseParagraph($, col,item));
       titles.push(text);
     });
 
