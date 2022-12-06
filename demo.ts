@@ -4,7 +4,7 @@ import { generateDescriptionFromDom } from './src/index';
 
 // const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
 //http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
-const url = 'http://www.town.chikuzen.fukuoka.jp/S037/090/oyakonotudoi.html';
+const url = 'https://www.city.hitachi.lg.jp/shimin/002/006/singata.html';
 const mockArticle = {
   id: 'test',
   title: 'test',
@@ -23,15 +23,22 @@ const mockArticle = {
 
   // const url = 'https://kankou-iwaki.or.jp/event/50968';
 
-  axios.get(url, {
-    insecureHTTPParser: true,
-  }).then((res,) => {
-    const $ = cheerio.load(res.data);
-    // const content: any = '.txtbox';
-    const content: any = '#main > div';
-    const titleEle = '#main > div > h1:first-child';
-    const result = generateDescriptionFromDom($, mockArticle, content, titleEle);
+  axios
+    .get(url, {
+      insecureHTTPParser: true,
+    })
+    .then((res) => {
+      const $ = cheerio.load(res.data);
+      // const content: any = '.txtbox';
+      const content: any = '#honContents';
+      const titleEle = '#honContents > div:nth-child(2) > div > h1:nth-child(2)';
+      const result = generateDescriptionFromDom(
+        $,
+        mockArticle,
+        content,
+        titleEle
+      );
 
-    console.log('result', result);
-  });
+      console.log(result);
+    });
 })();

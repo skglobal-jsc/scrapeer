@@ -1,7 +1,7 @@
 {
   "name": "@sk-global/scrapeer",
   "description": "A collection of utilities for scraping data from the web.",
-  "version": "1.0.24",
+  "version": "1.0.28",
   "source": "src/index.ts",
   "main": "dist/index.umd.js",
   "module": "dist/index.modern.module.js",

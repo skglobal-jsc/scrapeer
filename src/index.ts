@@ -5,7 +5,7 @@ import {
 } from './parsers/utils';
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
-
+const cheerio = require('cheerio');
 interface IArticle {
   id: string;
   title: string;
@@ -91,7 +91,6 @@ const parseParagraph = (
 ): string => {
   const $element = element as any;
   const { loadedUrl = '' } = item;
-
   let description = '';
   var link = '';
 
@@ -420,15 +419,11 @@ const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
       const $child = $el.children().eq(i);
       // if the child is a text node, return the text
       const tagName = $child.prop('tagName');
-      console.log('tagName', tagName);
-      console.log('$child.text()', $child.text());
       switch (tagName) {
         case 'BR':
-
           description += '\n';
           break;
         case 'TEXT':
-          console.log('TEXT', child.data);
           description += $child.text();
           break;
         case 'A':
@@ -438,7 +433,6 @@ const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
           description += parseImage($, child, item);
           break;
         case 'TABLE':
-          // description += parseParagraph($, child, item);
           description += getTableDescription(parseTable($, child, item));
           break;
         // case 'FORM':
@@ -493,19 +487,31 @@ const generateDescriptionFromDom = (
   contentSector: string = 'body',
   titleEle?: any
 ): any => {
-  const $content = $(contentSector);
+
+  const strHtml = $('body').html()
+  const $clone = cheerio.load(strHtml)
+  const $content = $clone(contentSector);
 
   if (titleEle) {
-    const $title = $(titleEle);
+    const $titleEle = $clone(titleEle);
+    $content.find('*').each((i, child) => {
+      const $child = $clone(child);
+      if (child.type === 'tag') {
+        // loop until meet the title element
+        if ($titleEle.is($child)) {
+          console.log('Found title element, break');
+          return false;
+        } else {
+          // if not titleEle, remove it
+          $child.remove();
+        }
+      }
 
-    // find all elements before the title element and remove them
-    $title.prevAll().remove();
-
-    // also remove title element to make sure it is not part of the description
-    $title.remove();
+      return true;
+    });
   }
 
-  let description = cleanText(extractTextFromDom($, $content, item));
+  let description = cleanText(extractTextFromDom($clone, $content, item));
   description += '\n\n' + '以上です。';
 
   return description;
