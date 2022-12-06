@@ -456,7 +456,7 @@ const generateDescriptionFromDom = (
   }
 
   let description = cleanText(extractTextFromDom($, $content, item));
-  description += '\n\n' + '以上です。';
+  description = 'ここから本文です。'+ '\n\n' + description + '\n\n' + '以上です。' ;
 
   return description;
 };
