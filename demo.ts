@@ -197,6 +197,23 @@ const getArticleDescription = ({ $, article }) => {
     });
   }
 
+  // 4. if we can not find the title, we can get description from the first h1
+  if (!res.description) {
+    const h1 = $('h1').first();
+    if (h1.length > 0) {
+      const description = generateDescriptionFromDom($, article, $(h1));
+      res.description = description;
+      res.articleCssPath = $(h1).getUniqueSelector();
+    }
+  }
+
+  // 5. Finally, we try to parse the description from the whole page
+  if (!res.description) {
+    const description = generateDescriptionFromDom($, article, 'body');
+    res.description = description;
+    res.articleCssPath = 'body';
+  }
+
   return res;
 };
 // const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
