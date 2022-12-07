@@ -137,7 +137,7 @@ const parseParagraph = (
               }
             }
           }
-          if (link.includes('javascript') || link.includes('#')) {
+          if (isIgnoreText(link) || link.includes('#')) {
             link = '';
           } else {
             description += text_a;
@@ -364,11 +364,11 @@ const isIgnoreText = (text: string): boolean => {
   if (
     text.includes('Acrobat') ||
     text.includes('Adobe') ||
-    text.includes('adobe.com/jp') ||
-    text.includes('function(') ||
-    text.includes('connect.facebook.net') ||
-    text.includes('facebook.com/share') ||
-    text.includes('javascript') ||
+    text.toLowerCase().includes('adobe.com/jp') ||
+    text.toLowerCase().includes('function(') ||
+    text.toLowerCase().includes('connect.facebook.net') ||
+    text.toLowerCase().includes('facebook.com/share') ||
+    text.toLowerCase().includes('javascript') ||
     text.toLowerCase().includes('line-website.com') ||
     text.toLowerCase().includes('document.write(') ||
     text.toLowerCase().includes('twitter.com') ||
