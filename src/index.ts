@@ -21,68 +21,68 @@ interface IArticle {
   [key: string]: any;
 }
 
-const parseHref = ($: any, element: any | string, item: IArticle): string => {
-  let description: string = '';
-  const { loadedUrl = '' } = item;
-  // let domain = new URL(loadedUrl).origin + '/';
+// const parseHref = ($: any, element: any | string, item: IArticle): string => {
+//   let description: string = '';
+//   const { loadedUrl = '' } = item;
+//   // let domain = new URL(loadedUrl).origin + '/';
 
-  let domElm = element as any;
-  let text_a = '';
+//   let domElm = element as any;
+//   let text_a = '';
 
-  if (domElm.children && domElm.children.length > 0) {
-    text_a = extractTextFromDom($, $(domElm), item);
-    description += text_a;
-  }
-  if (domElm.attribs.href && !domElm.attribs.href.includes(text_a)) {
-    if (domElm.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
-      return '';
-    }
+//   if (domElm.children && domElm.children.length > 0) {
+//     text_a = extractTextFromDom($, $(domElm), item);
+//     description += text_a;
+//   }
+//   if (domElm.attribs.href && !domElm.attribs.href.includes(text_a)) {
+//     if (domElm.attribs.href.includes('https://get.adobe.com/jp/reader/')) {
+//       return '';
+//     }
 
-    if (domElm.attribs.href && domElm.attribs.href.includes('http')) {
-      description += '\n' + domElm.attribs.href + '\n';
-    } else {
-      if (domElm.attribs.href && !domElm.attribs.href.includes('#')) {
-        const path = new URL(domElm.attribs.href, loadedUrl);
-        description += '\n' + path.href + '\n';
-      } else {
-        description = '';
-      }
-    }
-  }
+//     if (domElm.attribs.href && domElm.attribs.href.includes('http')) {
+//       description += '\n' + domElm.attribs.href + '\n';
+//     } else {
+//       if (domElm.attribs.href && !domElm.attribs.href.includes('#')) {
+//         const path = new URL(domElm.attribs.href, loadedUrl);
+//         description += '\n' + path.href + '\n';
+//       } else {
+//         description = '';
+//       }
+//     }
+//   }
 
-  if (description.includes('javascript') || description.includes('#')) {
-    description = '';
-  }
+//   if (description.includes('javascript') || description.includes('#')) {
+//     description = '';
+//   }
 
-  return description;
-};
+//   return description;
+// };
 
-const parseImage = ($: any, element: any | string, item: IArticle): string => {
-  const $element = $(element);
-  const { loadedUrl = '' } = item;
+// const parseImage = ($: any, element: any | string, item: IArticle): string => {
+//   const $element = $(element);
+//   const { loadedUrl = '' } = item;
 
-  let textContent = '';
-  if ((element as any).attribs.alt && (element as any).attribs.alt !== 'pdf') {
-    textContent +=
-      '\n\nここに「' +
-      (element as any).attribs.alt +
-      '」の画像があります。' +
-      '\n';
-    let src = String((element as any).attribs.src) || '';
-    if (src.includes('http')) {
-      textContent += src + '\n\n';
-    } else if (!src.startsWith('data:image')) {
-      const path = new URL(src, loadedUrl);
-      textContent += path.href + '\n\n';
-    }
-  }
+//   let textContent = '';
+//   if ((element as any).attribs.alt && (element as any).attribs.alt !== 'pdf') {
+//     textContent +=
+//       '\n\nここに「' +
+//       (element as any).attribs.alt +
+//       '」の画像があります。' +
+//       '\n';
+//     let src = String((element as any).attribs.src) || '';
+//     if (src.includes('http')) {
+//       textContent += src + '\n\n';
+//     } else if (!src.startsWith('data:image')) {
+//       const path = new URL(src, loadedUrl);
+//       textContent += path.href + '\n\n';
+//     }
+//   }
 
-  if (isIgnoreText(textContent)) {
-    textContent = '';
-  }
+//   if (isIgnoreText(textContent)) {
+//     textContent = '';
+//   }
 
-  return textContent;
-};
+//   return textContent;
+// };
 
 const parseParagraph = (
   $: any,
@@ -162,6 +162,7 @@ const parseParagraph = (
         case 'header':
         case 'section':
         case 'article':
+        case 'address':
           description += '\n' + parseParagraph($, child, item) + '\n';
           break;
         // case 'li':
@@ -175,7 +176,7 @@ const parseParagraph = (
           }
           break;
         case 'div':
-          const desc_div = parseParagraph($, child, item);
+          const desc_div = parseParagraph($, child, item) + '\n';
 
           if (!isIgnoreText(desc_div)) {
             description += desc_div;
