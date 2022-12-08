@@ -137,10 +137,17 @@ const parseParagraph = (
               }
             }
           }
-          if (isIgnoreText(link) || link.includes('#')) {
+          if (isIgnoreText(link)) {
             link = '';
           } else {
-            description += text_a;
+            if(link.includes('#')){
+              if(child.parent && child.parent.name && child.parent.name === 'li'){
+                link = '';
+                description += text_a;
+              }
+            }else{
+              description += text_a;
+            }
           }
 
           description += link;
