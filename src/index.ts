@@ -5,7 +5,7 @@ import {
 } from './parsers/utils';
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
-const cheerio = require('cheerio');
+import * as cheerio from 'cheerio';
 interface IArticle {
   id: string;
   title: string;
