@@ -37,16 +37,14 @@ const parseParagraph = (
 
       if (!child) continue;
 
-      // let ori_html = String($(child).html())
-      // let first_line_html = ori_html.substring(0,ori_html.indexOf('>'));
-      // if(first_line_html && first_line_html.length > 0){
-      //   const regEx = /display.*:.*none/;
-      //   // console.log('ori_first_html[0]',ori_html);
-      //   console.log('regEx.test',regEx.test(first_line_html));
-      //   if(first_line_html.includes('display:*none')){
-      //     continue;
-      //   }
-      // }
+      let ori_html = String($.html(child));
+      let first_line_html = ori_html.substring(0,ori_html.indexOf('>'));
+      if(first_line_html){
+        const regEx = /display.*:.*none/;
+        if(regEx.test(first_line_html)){
+          continue;
+        }
+      }
 
       const tagType = child.type;
       const tagName = child.name;
