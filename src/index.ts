@@ -31,13 +31,22 @@ const parseParagraph = (
   let description = '';
   var link = '';
 
-  console.log($element);
-
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
       const child = $element.children[j];
 
       if (!child) continue;
+
+      let ori_html = String($(child).html())
+      let first_line_html = ori_html.substring(0,ori_html.indexOf('>'));
+      if(first_line_html && first_line_html.length > 0){
+        const regEx = /display.*:.*none/;
+        // console.log('ori_first_html[0]',ori_html);
+        console.log('regEx.test',regEx.test(first_line_html));
+        if(first_line_html.includes('display:*none')){
+          continue;
+        }
+      }
 
       const tagType = child.type;
       const tagName = child.name;
@@ -48,7 +57,7 @@ const parseParagraph = (
 
       if (tagType == 'text') {
         if (child.data && !isIgnoreText(child.data)) {
-          description += child.data;
+          description += child.data.replace(/[\u200B-\u200D\uFEFF]/g, '');
         }
         continue;
       }
@@ -89,7 +98,7 @@ const parseParagraph = (
                 }
                 parent = parent.parent;
               }while(parent);
-              console.log('isParentLi', isParentLi);
+
               if(isParentLi){
                 link = '';
                 description += text_a;
@@ -125,7 +134,7 @@ const parseParagraph = (
           if(text_h){
             description += text_h + '\n';
           }
-         
+
           break;
         case 'header':
         case 'section':
