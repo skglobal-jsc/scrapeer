@@ -218,10 +218,10 @@ const getArticleDescription = ({ $, article }) => {
 };
 // const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
 //http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
-const url = 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html';
+const url = 'http://www.vill.otoineppu.hokkaido.jp/kakuka/kyouikuiin/oshirase/2022-1117-1012-21.html';
 const mockArticle = {
   title:
-    '日立市｜令和4年12月11日執行　茨城県議会議員一般選挙における期日前投票の状況について',
+    '2022年～2023年シーズンクロスカントリースキー大会情報について',
   publishDate: '令和4年12月6日（火曜日）',
   author: [],
   publisher: null,
@@ -236,8 +236,8 @@ const mockArticle = {
   crawledAt: '2022-12-06T02:23:41.764Z',
   id: 'c-shinjukuku-aHR0cHM6Ly93d3cuY2l0eS5oaXRhY2hpLmxnLmpwL3NoaW1pbi8wMDgvMDAyL3AxMTA5MTEuaHRtbA',
   language: 'ja',
-  URL: 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html',
-  loadedUrl: 'https://www.city.hitachi.lg.jp/shimin/008/002/p110911.html',
+  URL: url,
+  loadedUrl: url,
 };
 (async () => {
   const res = await axios.get(url, {
@@ -271,5 +271,5 @@ const mockArticle = {
 
   // TODO, testing
   const result = getArticleDescription({ $, article: mockArticle });
-  console.log(result);
+  console.log("result", result.description);
 })();

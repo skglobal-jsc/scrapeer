@@ -20,6 +20,8 @@ export const cleanText = (text: string = '') => {
 export const getTableDescription = (tableResult: TableResult) => {
   let description = '';
 
+  if(tableResult.totalRows == 0 || tableResult.totalCols == 0) return description;
+
   description = `この下に、縦${tableResult.totalRows}行、横${tableResult.totalCols}列の表があります。\n`;
 
   if (tableResult.caption) {
@@ -36,6 +38,7 @@ export const getTableDescription = (tableResult: TableResult) => {
 
   tableResult.rows.forEach((row, i) => {
     let rowText = '';
+    let rowTextRaw = '';
 
     if (row.cols && row.cols.length > 0) {
       if (currentIndex == 0) {
@@ -46,9 +49,14 @@ export const getTableDescription = (tableResult: TableResult) => {
 
       row.cols.forEach((col, j) => {
         rowText += col + '、';
+        rowTextRaw+= col;
       });
 
-      if(!rowText.includes(title_str)){
+      if(!rowTextRaw){
+        return;
+      }
+
+      if(rowText && !rowText.includes(title_str)){
         if (i == tableResult.rows.length - 1) {
           description += `${rowText}です。\n表の終わりです。`;
         } else {
@@ -58,6 +66,10 @@ export const getTableDescription = (tableResult: TableResult) => {
       }
     }
   });
+
+  if(currentIndex == 0){
+    description = '';
+  }
 
   return description;
 };

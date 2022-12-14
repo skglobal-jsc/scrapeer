@@ -31,6 +31,8 @@ const parseParagraph = (
   let description = '';
   var link = '';
 
+  console.log($element);
+
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
       const child = $element.children[j];
@@ -87,10 +89,13 @@ const parseParagraph = (
                 }
                 parent = parent.parent;
               }while(parent);
-
+              console.log('isParentLi', isParentLi);
               if(isParentLi){
                 link = '';
                 description += text_a;
+              }else{
+                link = '';
+                text_a='';
               }
             }else{
               description += text_a;
@@ -107,21 +112,36 @@ const parseParagraph = (
           }
           break;
         case 'h2':
-          description += '●' + parseParagraph($, child, item) + '\n';
+          let text_h2 = parseParagraph($, child, item).trim();
+          if(text_h2){
+            description += '●' + text_h2 + '\n';
+          }
           break;
         case 'h1':
         case 'h3':
         case 'h4':
         case 'h5':
+          let text_h = parseParagraph($, child, item).trim();
+          if(text_h){
+            description += text_h + '\n';
+          }
+         
+          break;
         case 'header':
         case 'section':
         case 'article':
         case 'address':
-          description += '\n' + parseParagraph($, child, item) + '\n';
+          let text_component = parseParagraph($, child, item).trim();
+          if(text_component){
+            description += '\n' + text_component + '\n';
+          }
           break;
-        // case 'li':
-        //   description += parseParagraph($, child, item);
-        //   break;
+        case 'h6':
+          let text_h6 = parseParagraph($, child, item).trim();
+          if(text_h6){
+            description += text_h6 + '\n';
+          }
+          break;
         case 'strong':
           const desc_strong = parseParagraph($, child, item);
 
@@ -130,18 +150,18 @@ const parseParagraph = (
           }
           break;
         case 'div':
-          const desc_div = parseParagraph($, child, item) + '\n';
+          const desc_div = parseParagraph($, child, item);
 
-          if (!isIgnoreText(desc_div)) {
-            description += desc_div;
+          if (desc_div && !isIgnoreText(desc_div)) {
+            description += desc_div + '\n';
           }
 
           break;
         case 'p':
-          const desc_p = parseParagraph($, child, item) + '\n';
+          const desc_p = parseParagraph($, child, item);
 
-          if (!isIgnoreText(desc_p)) {
-            description += desc_p;
+          if (desc_p && !isIgnoreText(desc_p)) {
+            description += desc_p+ '\n';
           }
 
           break;
@@ -169,7 +189,7 @@ const parseParagraph = (
             const width = Number(child.attribs.width);
             const height = Number(child.attribs.height);
 
-            if(width < 30 || height < 30) {
+            if(width < 30 && height < 30) {
               continue;
             }
           }
@@ -230,7 +250,7 @@ const parseOLComponent = (
 
   if ($els.length > 0) {
     $element.find('li').each((i, col) => {
-      description += i + 1 + '. ' + parseParagraph($, col, item) + '\n';
+      description += i + 1 + '. ' + parseParagraph($, col, item).trim() + '\n';
     });
   }
   return description;
@@ -325,6 +345,7 @@ const isIgnoreText = (text: string): boolean => {
     text.toLowerCase().includes('facebook.com/share') ||
     text.toLowerCase().includes('javascript') ||
     text.toLowerCase().includes('line-website.com') ||
+    text.toLowerCase().includes('line.me') ||
     text.toLowerCase().includes('document.write(') ||
     text.toLowerCase().includes('twitter.com') ||
     text.toLowerCase().includes('hatena')
