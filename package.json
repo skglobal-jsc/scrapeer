@@ -34,6 +34,9 @@
     "ts-jest": "^29.0.1",
     "ts-node": "^10.9.1"
   },
+  "dependencies": {
+    "cheerio": "1.0.0-rc.3"
+  },
   "prettier": {
     "singleQuote": true
   },
