@@ -38,10 +38,10 @@ const parseParagraph = (
       if (!child) continue;
 
       let ori_html = String($.html(child));
-      let first_line_html = ori_html.substring(0,ori_html.indexOf('>'));
-      if(first_line_html){
+      let first_line_html = ori_html.substring(0, ori_html.indexOf('>'));
+      if (first_line_html) {
         const regEx = /display.*:.*none/;
-        if(regEx.test(first_line_html)){
+        if (regEx.test(first_line_html)) {
           continue;
         }
       }
@@ -86,25 +86,25 @@ const parseParagraph = (
           if (isIgnoreText(link)) {
             link = '';
           } else {
-            if(link.includes('#')){
+            if (link.includes('#')) {
               let isParentLi = false;
               let parent = child.parent;
-              do{
-                if(parent && parent.name && parent.name === 'li'){
+              do {
+                if (parent && parent.name && parent.name === 'li') {
                   isParentLi = true;
                   break;
                 }
                 parent = parent.parent;
-              }while(parent);
+              } while (parent);
 
-              if(isParentLi){
+              if (isParentLi) {
                 link = '';
                 description += text_a;
-              }else{
+              } else {
                 link = '';
-                text_a='';
+                text_a = '';
               }
-            }else{
+            } else {
               description += text_a;
             }
           }
@@ -120,7 +120,7 @@ const parseParagraph = (
           break;
         case 'h2':
           let text_h2 = parseParagraph($, child, item).trim();
-          if(text_h2){
+          if (text_h2) {
             description += '●' + text_h2 + '\n';
           }
           break;
@@ -129,7 +129,7 @@ const parseParagraph = (
         case 'h4':
         case 'h5':
           let text_h = parseParagraph($, child, item).trim();
-          if(text_h){
+          if (text_h) {
             description += text_h + '\n';
           }
 
@@ -139,13 +139,13 @@ const parseParagraph = (
         case 'article':
         case 'address':
           let text_component = parseParagraph($, child, item).trim();
-          if(text_component){
+          if (text_component) {
             description += '\n' + text_component + '\n';
           }
           break;
         case 'h6':
           let text_h6 = parseParagraph($, child, item).trim();
-          if(text_h6){
+          if (text_h6) {
             description += text_h6 + '\n';
           }
           break;
@@ -159,7 +159,7 @@ const parseParagraph = (
         case 'div':
           const desc_div = parseParagraph($, child, item);
 
-          if (desc_div && !isIgnoreText(desc_div)) {
+          if (desc_div && !isIgnoreTag(child) && !isIgnoreText(desc_div)) {
             description += desc_div + '\n';
           }
 
@@ -168,7 +168,7 @@ const parseParagraph = (
           const desc_p = parseParagraph($, child, item);
 
           if (desc_p && !isIgnoreText(desc_p)) {
-            description += desc_p+ '\n';
+            description += desc_p + '\n';
           }
 
           break;
@@ -192,14 +192,15 @@ const parseParagraph = (
           //description += `この下に入力用のフォームがあります。\nフォームに入力する場合は、「詳細はこちら」を押して元ページを開いてください。`;
           break;
         case 'img':
-          if(child.attribs && child.attribs.width && child.attribs.height) {
+          if (child.attribs && child.attribs.width && child.attribs.height) {
             const width = Number(child.attribs.width);
             const height = Number(child.attribs.height);
 
-            if(width < 30 && height < 30) {
+            if (width < 30 && height < 30) {
               continue;
             }
           }
+
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             let src = child.attribs.src ? String(child.attribs.src) : '';
 
@@ -311,7 +312,7 @@ const parseTable = (
 
     $table.find('th').each((i, col) => {
       const $col = $(col);
-      const text = cleanText(parseParagraph($, col,item));
+      const text = cleanText(parseParagraph($, col, item));
       titles.push(text);
     });
 
@@ -355,7 +356,8 @@ const isIgnoreText = (text: string): boolean => {
     text.toLowerCase().includes('line.me') ||
     text.toLowerCase().includes('document.write(') ||
     text.toLowerCase().includes('twitter.com') ||
-    text.toLowerCase().includes('hatena')
+    text.toLowerCase().includes('hatena') ||
+    text.includes('＜外部リンク＞')
   ) {
     return true;
   }
@@ -363,28 +365,13 @@ const isIgnoreText = (text: string): boolean => {
   return false;
 };
 
-const isIgnoreTag = (element: any | string, loadedUrl: string): boolean => {
-  //ignore social area in https://www.city.sapporo.jp/
+const isIgnoreTag = (element: any | string): boolean => {
   if (
     element.attribs &&
     element.attribs.class &&
-    element.attribs.class.includes('rs-skip')
-  ) {
-    return true;
-  } else if (
-    element.attribs &&
-    element.attribs.class &&
-    element.attribs.class.includes('plugin')
-  ) {
-    if (loadedUrl.includes('aomori.aomori.jp')) {
-      return true;
-    }
-  } else if (
-    element.attribs &&
-    element.attribs.class &&
-    (element.attribs.class.includes('pdf_download') ||
-      element.attribs.class.includes('adobeReader') ||
-      element.attribs.class.includes('adobe-reader'))
+    (element.attribs.class.includes('rs-skip') ||
+      element.attribs.class.includes('pdf_download') ||
+      element.attribs.class.includes('sns_box'))
   ) {
     return true;
   } else if (
@@ -450,7 +437,8 @@ const generateDescriptionFromDom = (
   }
 
   let description = cleanText(extractTextFromDom($clone, $content, item));
-  description = 'ここから本文です。'+ '\n\n' + description + '\n\n' + '以上です。' ;
+  description =
+    'ここから本文です。' + '\n\n' + description + '\n\n' + '以上です。';
 
   return description;
 };
