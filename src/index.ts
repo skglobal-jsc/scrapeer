@@ -173,7 +173,13 @@ const parseParagraph = (
 
           break;
         case 'table':
-          description += getTableDescription(parseTable($, child, item));
+          let table_result = parseTable($, child, item);
+          if (table_result.totalRows == 1 && table_result.totalCols == 1) {
+            description += parseParagraph($, child, item);
+          } else {
+            let tableDesc = getTableDescription(table_result);
+            description += tableDesc;
+          }
           break;
         case 'ol':
           description += parseOLComponent($, child, item);
@@ -183,6 +189,10 @@ const parseParagraph = (
         case 'dl':
         case 'dd':
         case 'dt':
+        case 'tbody':
+        case 'tr':
+        case 'thead':
+        case 'u':
           description += parseParagraph($, child, item);
           break;
         case 'ul':
@@ -294,43 +304,50 @@ const parseTable = (
 
   // find caption of table
   const caption = cleanText($table.find('caption').text());
-  const $rows = $table.find('tr');
+  // const $rows = $table.find('tr');
+  const $rows = $table.children('tbody').children('tr');
   const $titles = $table.find('th');
 
   let totalRows = $rows.length;
-  let totalCols = $rows.first().find('th, td').length;
-
-  let bodyText = $($table).find('tbody').text().trim();
+  let totalCols = $rows.first().children('th, td').length;
+  console.log('totalCols', totalCols);
+  let bodyText = $($table).children('tbody').text().trim();
 
   if (bodyText.includes('jQuery(function()')) {
     totalRows = 0;
     totalCols = 0;
   } else {
-    if (totalRows > 0) {
-      totalCols = $($rows[0]).find('th,td').length;
-    }
-
-    $table.find('th').each((i, col) => {
-      const $col = $(col);
-      const text = cleanText(parseParagraph($, col, item));
-      titles.push(text);
-    });
-
-    // loop through each row
-    $rows.each((i, row) => {
-      const $rowAtIndex = $(row);
-      const cols: any = [];
-      $rowAtIndex.find('th,td').each((j, col) => {
+    if (totalRows == 1 && totalCols == 1) {
+      return {
+        caption,
+        totalRows,
+        totalCols,
+        titles,
+        rows,
+      };
+    } else {
+      $table.find('th').each((i, col) => {
         const $col = $(col);
-        // const text = cleanText($col.text());
-        const text = parseParagraph($, col, item).trim();
-        cols.push(text);
+        const text = cleanText(parseParagraph($, col, item));
+        titles.push(text);
       });
-      rows.push({
-        index: i + 1,
-        cols,
+
+      // loop through each row
+      $rows.each((i, row) => {
+        const $rowAtIndex = $(row);
+        const cols: any = [];
+        $rowAtIndex.find('th,td').each((j, col) => {
+          const $col = $(col);
+          // const text = cleanText($col.text());
+          const text = parseParagraph($, col, item).trim();
+          cols.push(text);
+        });
+        rows.push({
+          index: i + 1,
+          cols,
+        });
       });
-    });
+    }
   }
 
   const result = {

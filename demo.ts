@@ -247,7 +247,7 @@ const mockArticle = {
   topic: ['新着情報'],
   URL: 'https://www.city.miyawaka.lg.jp/kiji003445788/index.html',
   loadedUrl: 'https://www.city.miyawaka.lg.jp/kiji003445788/index.html',
-  articleCssPath: '#container', // TODO remove this if you want auto detect
+  articleCssPath: '#container',
   ttl: 1676335263,
   contentURL:
     'https://uvcrawler-gov-basestack-databuckete3889a50-syjuakpzl440.s3.amazonaws.com/news/detail/d-fukuoka-miyawakashi-aHR0cHM6Ly93d3cuY2l0eS5taXlhd2FrYS5sZy5qcC9raWppMDAzNDQ1Nzg4L2luZGV4Lmh0bWw.json',
@@ -286,5 +286,5 @@ const mockArticle = {
 
   // TODO, testing
   const result = getArticleDescription({ $, article: mockArticle });
-  console.log('result', result.description);
+  console.log('result\n', result.description);
 })();
