@@ -29,7 +29,7 @@ const parseParagraph = (
   const $element = element as any;
   const { loadedUrl = '' } = item;
   let description = '';
-  var link = '';
+
 
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
@@ -64,14 +64,15 @@ const parseParagraph = (
           description += '\n';
           break;
         case 'a':
+          var link = '';
           let text_a = '';
           if (child.children && child.children.length > 0) {
             text_a = parseParagraph($, child, item);
           }
 
-          const href = child.attribs.href ? String(child.attribs.href) : '';
+          const href = child.attribs.href ? String(child.attribs.href.trim()) : '';
           if (href) {
-            if (!href.includes(text_a)) {
+            if (!href.includes(text_a.trim())) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
                 continue;
               }
@@ -83,7 +84,7 @@ const parseParagraph = (
               }
             }
           }
-          if (isIgnoreText(link)) {
+          if (link && isIgnoreText(link)) {
             link = '';
           } else {
             if (link.includes('#')) {
