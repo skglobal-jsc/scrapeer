@@ -30,7 +30,6 @@ const parseParagraph = (
   const { loadedUrl = '' } = item;
   let description = '';
 
-
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
       const child = $element.children[j];
@@ -70,7 +69,9 @@ const parseParagraph = (
             text_a = parseParagraph($, child, item);
           }
 
-          const href = child.attribs.href ? String(child.attribs.href.trim()) : '';
+          const href = child.attribs.href
+            ? String(child.attribs.href.trim())
+            : '';
           if (href) {
             if (!href.includes(text_a.trim())) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
@@ -79,8 +80,12 @@ const parseParagraph = (
               if (href.includes('http')) {
                 link = ' - ' + href + ' ';
               } else {
-                const path = new URL(href, loadedUrl);
-                link = ' - ' + path.href + ' ';
+                if (loadedUrl) {
+                  const path = new URL(href, loadedUrl);
+                  link = ' - ' + path.href + ' ';
+                } else {
+                  link = ' - ' + href + ' ';
+                }
               }
             }
           }
@@ -228,8 +233,12 @@ const parseParagraph = (
               if (src.includes('http')) {
                 description += src + '\n\n';
               } else if (!src.startsWith('data:image')) {
-                const path = new URL(src, loadedUrl);
-                description += path.href + '\n\n';
+                if (loadedUrl) {
+                  const path = new URL(src, loadedUrl);
+                  description += path.href + '\n\n';
+                } else {
+                  description += src + '\n\n';
+                }
               }
             }
           } else {
@@ -240,8 +249,12 @@ const parseParagraph = (
                 if (src.includes('http')) {
                   description += src + '\n\n';
                 } else if (!src.startsWith('data:image')) {
-                  const path = new URL(src, loadedUrl);
-                  description += path.href + '\n\n';
+                  if (loadedUrl) {
+                    const path = new URL(src, loadedUrl);
+                    description += path.href + '\n\n';
+                  }else{
+                    description += src + '\n\n';
+                  }
                 }
               }
             }
@@ -431,6 +444,7 @@ const generateDescriptionFromDom = (
   titleEle?: any
 ): any => {
   const strHtml = $.html();
+
   const $clone = cheerio.load(strHtml);
   const $content = $clone(contentSector);
 
@@ -470,4 +484,4 @@ const convert2byteNumberTo1byte = (num_str) => {
   });
 };
 
-export { generateDescriptionFromDom, parseTable, convert2byteNumberTo1byte };
+export { generateDescriptionFromDom, parseTable };
