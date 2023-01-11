@@ -6,6 +6,7 @@ import {
 import { TableResult } from './parsers/table';
 import { parseForm } from './parsers';
 import * as cheerio from 'cheerio';
+import { useLocale } from './localization/locale'
 interface IArticle {
   id: string;
   title: string;
@@ -24,8 +25,10 @@ interface IArticle {
 const parseParagraph = (
   $: any,
   element: any | string,
-  item: IArticle
+  item: IArticle,
+  lang: string = 'ja'
 ): string => {
+
   const $element = element as any;
   const { loadedUrl = '' } = item;
   let description = '';
@@ -66,7 +69,7 @@ const parseParagraph = (
           var link = '';
           let text_a = '';
           if (child.children && child.children.length > 0) {
-            text_a = parseParagraph($, child, item);
+            text_a = parseParagraph($, child, item,lang);
           }
 
           const href = child.attribs.href
@@ -118,14 +121,14 @@ const parseParagraph = (
           description += link;
           break;
         case 'span':
-          const desc_span = parseParagraph($, child, item);
+          const desc_span = parseParagraph($, child, item,lang);
 
           if (!isIgnoreText(desc_span)) {
             description += desc_span;
           }
           break;
         case 'h2':
-          let text_h2 = parseParagraph($, child, item).trim();
+          let text_h2 = parseParagraph($, child, item,lang).trim();
           if (text_h2) {
             description += '●' + text_h2 + '\n';
           }
@@ -134,7 +137,7 @@ const parseParagraph = (
         case 'h3':
         case 'h4':
         case 'h5':
-          let text_h = parseParagraph($, child, item).trim();
+          let text_h = parseParagraph($, child, item,lang).trim();
           if (text_h) {
             description += text_h + '\n';
           }
@@ -144,26 +147,26 @@ const parseParagraph = (
         case 'section':
         case 'article':
         case 'address':
-          let text_component = parseParagraph($, child, item).trim();
+          let text_component = parseParagraph($, child, item,lang).trim();
           if (text_component) {
             description += '\n' + text_component + '\n';
           }
           break;
         case 'h6':
-          let text_h6 = parseParagraph($, child, item).trim();
+          let text_h6 = parseParagraph($, child, item,lang).trim();
           if (text_h6) {
             description += text_h6 + '\n';
           }
           break;
         case 'strong':
-          const desc_strong = parseParagraph($, child, item);
+          const desc_strong = parseParagraph($, child, item,lang);
 
           if (!isIgnoreText(desc_strong)) {
             description += desc_strong;
           }
           break;
         case 'div':
-          const desc_div = parseParagraph($, child, item);
+          const desc_div = parseParagraph($, child, item,lang);
 
           if (desc_div && !isIgnoreTag(child) && !isIgnoreText(desc_div)) {
             description += desc_div + '\n';
@@ -171,7 +174,7 @@ const parseParagraph = (
 
           break;
         case 'p':
-          const desc_p = parseParagraph($, child, item);
+          const desc_p = parseParagraph($, child, item,lang);
 
           if (desc_p && !isIgnoreText(desc_p)) {
             description += desc_p + '\n';
@@ -181,7 +184,7 @@ const parseParagraph = (
         case 'table':
           let table_result = parseTable($, child, item);
           if (table_result.totalRows == 1 && table_result.totalCols == 1) {
-            description += parseParagraph($, child, item);
+            description += parseParagraph($, child, item,lang);
           } else {
             let tableDesc = getTableDescription(table_result);
             description += tableDesc;
@@ -199,7 +202,7 @@ const parseParagraph = (
         case 'tr':
         case 'thead':
         case 'u':
-          description += parseParagraph($, child, item);
+          description += parseParagraph($, child, item,lang);
           break;
         case 'ul':
           description += parseULComponent($, child, item);
@@ -225,10 +228,7 @@ const parseParagraph = (
             }
             if (src) {
               description +=
-                '\n\nここに「' +
-                child.attribs.alt +
-                '」の画像があります。' +
-                '\n';
+                `\n\n${useLocale('Image',lang,child.attribs.alt)}\n`;
 
               if (src.includes('http')) {
                 description += src + '\n\n';
@@ -245,7 +245,7 @@ const parseParagraph = (
             if (!child.attribs.alt) {
               let src = child.attribs.src ? String(child.attribs.src) : '';
               if (src) {
-                description += '\n\nここに画像があります。\n';
+                description += `\n\n${useLocale('ImageNoAlt')}\n`;
                 if (src.includes('http')) {
                   description += src + '\n\n';
                 } else if (!src.startsWith('data:image')) {
@@ -261,7 +261,7 @@ const parseParagraph = (
           }
           break;
         default:
-          description += parseParagraph($, $(child), item);
+          description += parseParagraph($, $(child), item,lang);
           break;
       }
     }
@@ -272,7 +272,8 @@ const parseParagraph = (
 const parseOLComponent = (
   $: any,
   element: any | string,
-  item: IArticle
+  item: IArticle,
+  lang:string = 'ja'
 ): string => {
   const $element = $(element);
   let description = '';
@@ -282,7 +283,7 @@ const parseOLComponent = (
 
   if ($els.length > 0) {
     $element.find('li').each((i, col) => {
-      description += i + 1 + '. ' + parseParagraph($, col, item).trim() + '\n';
+      description += i + 1 + '. ' + parseParagraph($, col, item,lang).trim() + '\n';
     });
   }
   return description;
@@ -291,7 +292,8 @@ const parseOLComponent = (
 const parseULComponent = (
   $: any,
   element: any | string,
-  item: IArticle
+  item: IArticle,
+  lang:string = 'ja'
 ): string => {
   const $element = $(element);
   let description = '';
@@ -301,7 +303,7 @@ const parseULComponent = (
 
   if ($els.length > 0) {
     $element.find('li').each((i, col) => {
-      description += parseParagraph($, col, item) + '\n';
+      description += parseParagraph($, col, item,lang) + '\n';
     });
   }
   return description;
@@ -310,7 +312,8 @@ const parseULComponent = (
 const parseTable = (
   $: any,
   element: any | string,
-  item: IArticle
+  item: IArticle,
+  lang:string = 'ja'
 ): TableResult => {
   const $table = $(element);
   const rows: any = [];
@@ -324,7 +327,6 @@ const parseTable = (
 
   let totalRows = $rows.length;
   let totalCols = $rows.first().children('th, td').length;
-  console.log('totalCols', totalCols);
   let bodyText = $($table).children('tbody').text().trim();
 
   if (bodyText.includes('jQuery(function()')) {
@@ -342,7 +344,7 @@ const parseTable = (
     } else {
       $table.find('th').each((i, col) => {
         const $col = $(col);
-        const text = cleanText(parseParagraph($, col, item));
+        const text = cleanText(parseParagraph($, col, item,lang));
         titles.push(text);
       });
 
@@ -353,7 +355,7 @@ const parseTable = (
         $rowAtIndex.find('th,td').each((j, col) => {
           const $col = $(col);
           // const text = cleanText($col.text());
-          const text = parseParagraph($, col, item).trim();
+          const text = parseParagraph($, col, item,lang).trim();
           cols.push(text);
         });
         rows.push({
@@ -419,7 +421,7 @@ const isIgnoreTag = (element: any | string): boolean => {
   return false;
 };
 
-const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
+const extractTextFromDom = ($: any, $el: any, item: IArticle, lang:string = 'ja') => {
   let description = '';
   if (!$el) return '';
 
@@ -431,7 +433,7 @@ const extractTextFromDom = ($: any, $el: any, item: IArticle) => {
   } else {
     // if there are children, get the text from each child
     $children.each((i, child) => {
-      description += parseParagraph($, child, item);
+      description += parseParagraph($, child, item,lang);
     });
   }
   return description;
@@ -441,8 +443,14 @@ const generateDescriptionFromDom = (
   $: any,
   item: IArticle,
   contentSector: string = 'body',
-  titleEle?: any
+  titleEle?: any,
+  lang: string = 'ja',
 ): any => {
+  let _lang = lang;
+  if(_lang !== 'ja' && _lang !== 'vi'){
+    _lang = 'en';
+  }
+
   const strHtml = $.html();
 
   const $clone = cheerio.load(strHtml);
@@ -468,9 +476,11 @@ const generateDescriptionFromDom = (
     });
   }
 
-  let description = cleanText(extractTextFromDom($clone, $content, item));
+  let description = cleanText(extractTextFromDom($clone, $content, item,_lang));
+  // description =
+  //   'ここから本文です。' + '\n\n' + description + '\n\n' + '以上です。';
   description =
-    'ここから本文です。' + '\n\n' + description + '\n\n' + '以上です。';
+    useLocale('StartArticle',_lang) + '\n\n' + description + '\n\n' + useLocale('EndArticle',_lang);
 
   return description;
 };
