@@ -74,6 +74,53 @@ export const getTableDescription = (tableResult: TableResult,lang:string = 'ja')
   return description;
 };
 
+export const getTableDescriptionForRAGT = (tableResult: TableResult,lang:string = 'ja') => {
+  let description = '';
+
+  if(tableResult.totalRows == 0 || tableResult.totalCols == 0) return description;
+
+  let title_str = tableResult.titles?.join('、') || 'no_titlte';
+
+  let currentIndex = 0;
+
+  tableResult.rows.forEach((row, i) => {
+    let rowText = '';
+    let rowTextRaw = '';
+
+    if (row.cols && row.cols.length > 0) {
+      if (currentIndex == 0) {
+        rowText += useLocale('Table1stRow',lang);
+      } else {
+        rowText += `${useLocale('TableRow',lang, (currentIndex + 1).toString())}`;
+      }
+
+      row.cols.forEach((col, j) => {
+        rowText += col + '、';
+        rowTextRaw+= col;
+      });
+
+      if(!rowTextRaw){
+        return;
+      }
+
+      if(rowText && !rowText.includes(title_str)){
+        if (i == tableResult.rows.length - 1) {
+          description += `${rowText}${useLocale('TableEndRAGT',lang)}`;
+        } else {
+          description += `${rowText}\n`;
+        }
+        currentIndex++;
+      }
+    }
+  });
+
+  if(currentIndex == 0){
+    description = '';
+  }
+
+  return description;
+};
+
 export const getFormDescription = (
   formResult: FormResult,
   loadedUrl: string,

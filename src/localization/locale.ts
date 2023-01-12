@@ -39,6 +39,11 @@ const locale = (value) => ({
     en: `The table content ends.`,
     vi: `Kết thúc bảng`,
   },
+  TableEndRAGT: {
+    ja: `です。\n`,
+    en: ``,
+    vi: ``,
+  },
   Table1stRow: {
     ja: `データの1行目、`,
     en: `The 1st row data`,
