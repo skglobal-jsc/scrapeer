@@ -77,7 +77,7 @@ const parseParagraph = (
             ? String(child.attribs.href.trim())
             : '';
           if (href) {
-            href=encodeURIComponent(href);
+            // href=encodeURIComponent(href);
             if (!href.includes(text_a.trim())) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
                 continue;
@@ -224,7 +224,7 @@ const parseParagraph = (
 
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             let src = child.attribs.src ? String(child.attribs.src) : '';
-            src = encodeURIComponent(src);
+            // src = encodeURIComponent(src);
 
             if (isIgnoreText(src) || isIgnoreText(child.attribs.alt)) {
               continue;
@@ -247,7 +247,7 @@ const parseParagraph = (
           } else {
             if (!child.attribs.alt) {
               let src = child.attribs.src ? String(child.attribs.src) : '';
-              src = encodeURIComponent(src);
+              // src = encodeURIComponent(src);
 
               if (src) {
                 description += `\n\n${useLocale('ImageNoAlt')}\n`;
@@ -328,7 +328,7 @@ const parseParagraphForRAGT = (
             ? String(child.attribs.href.trim())
             : '';
           if (href) {
-            href = encodeURIComponent(href);
+            // href = encodeURIComponent(href);
             if (!href.includes(text_a.trim())) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
                 continue;
@@ -471,7 +471,7 @@ const parseParagraphForRAGT = (
 
           if (child.attribs.alt && child.attribs.alt !== 'pdf') {
             let src = child.attribs.src ? String(child.attribs.src) : '';
-            src=encodeURIComponent(src);
+            // src=encodeURIComponent(src);
             if (isIgnoreText(src) || isIgnoreText(child.attribs.alt)) {
               continue;
             }
@@ -493,7 +493,7 @@ const parseParagraphForRAGT = (
           } else {
             if (!child.attribs.alt) {
               let src = child.attribs.src ? String(child.attribs.src) : '';
-              src = encodeURIComponent(src);
+              // src = encodeURIComponent(src);
               if (src) {
                 description += `\n\n${useLocale('ImageNoAlt')}\n`;
                 if (src.includes('http')) {
