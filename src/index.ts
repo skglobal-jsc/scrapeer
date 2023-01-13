@@ -435,13 +435,9 @@ const parseParagraphForRAGT = (
 
           break;
         case 'table':
-          let table_result = parseTable($, child, item);
-          if (table_result.totalRows == 1 && table_result.totalCols == 1) {
-            description += parseParagraphForRAGT($, child, item,lang);
-          } else {
-            let tableDesc = getTableDescriptionForRAGT(table_result,lang);
-            description += tableDesc;
-          }
+          let table_result = parseTableForRAGT($, child, item);
+          let tableDesc = getTableDescriptionForRAGT(table_result,lang);
+          description += tableDesc;
           break;
         case 'ol':
           description += parseOLComponent($, child, item);
@@ -618,6 +614,63 @@ const parseTable = (
         });
       });
     }
+  }
+
+  const result = {
+    caption,
+    totalRows,
+    totalCols,
+    titles,
+    rows,
+  };
+  return result;
+};
+
+const parseTableForRAGT = (
+  $: any,
+  element: any | string,
+  item: IArticle,
+  lang:string = 'ja'
+): TableResult => {
+  const $table = $(element);
+  const rows: any = [];
+  const titles: any = [];
+
+  // find caption of table
+  const caption = cleanText($table.find('caption').text());
+  // const $rows = $table.find('tr');
+  const $rows = $table.children('tbody').children('tr');
+  const $titles = $table.find('th');
+
+  let totalRows = $rows.length;
+  let totalCols = $rows.first().children('th, td').length;
+  let bodyText = $($table).children('tbody').text().trim();
+
+  if (bodyText.includes('jQuery(function()')) {
+    totalRows = 0;
+    totalCols = 0;
+  } else {
+    $table.find('th').each((i, col) => {
+      const $col = $(col);
+      const text = cleanText(parseParagraphForRAGT($, col, item,lang));
+      titles.push(text);
+    });
+
+    // loop through each row
+    $rows.each((i, row) => {
+      const $rowAtIndex = $(row);
+      const cols: any = [];
+      $rowAtIndex.find('th,td').each((j, col) => {
+        const $col = $(col);
+        // const text = cleanText($col.text());
+        const text = parseParagraphForRAGT($, col, item,lang).trim();
+        cols.push(text);
+      });
+      rows.push({
+        index: i + 1,
+        cols,
+      });
+    });
   }
 
   const result = {
