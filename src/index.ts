@@ -230,8 +230,8 @@ const parseParagraph = (
               continue;
             }
             if (src) {
-              description +=
-                `\n\n${useLocale('Image',lang,child.attribs.alt)}\n`;
+              // description +=
+              //   `\n\n${useLocale('Image',lang,child.attribs.alt)}\n`;
 
               if (src.includes('http')) {
                 description += src + '\n\n';
@@ -476,8 +476,8 @@ const parseParagraphForRAGT = (
               continue;
             }
             if (src) {
-              description +=
-                `\n\n${useLocale('Image',lang,child.attribs.alt)}\n`;
+              // description +=
+              //   `\n\n${useLocale('Image',lang,child.attribs.alt)}\n`;
 
               if (src.includes('http')) {
                 description += src + '\n\n';
