@@ -34,6 +34,7 @@ const parseParagraph = (
   const { loadedUrl = '' } = item;
   let description = '';
 
+
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
       const child = $element.children[j];
@@ -73,9 +74,7 @@ const parseParagraph = (
             text_a = parseParagraph($, child, item,lang);
           }
 
-          let href = child.attribs.href
-            ? String(child.attribs.href.trim())
-            : '';
+          const href = child.attribs.href ? String(child.attribs.href.trim()) : '';
           if (href) {
             // href=encodeURIComponent(href);
             if (!href.includes(text_a.trim())) {
@@ -85,12 +84,8 @@ const parseParagraph = (
               if (href.includes('http')) {
                 link = ' - ' + href + ' ';
               } else {
-                if (loadedUrl) {
-                  const path = new URL(href, loadedUrl);
-                  link = ' - ' + path.href + ' ';
-                } else {
-                  link = ' - ' + href + ' ';
-                }
+                const path = new URL(href, loadedUrl);
+                link = ' - ' + path.href + ' ';
               }
             }
           }
@@ -236,12 +231,8 @@ const parseParagraph = (
               if (src.includes('http')) {
                 description += src + '\n\n';
               } else if (!src.startsWith('data:image')) {
-                if (loadedUrl) {
-                  const path = new URL(src, loadedUrl);
-                  description += path.href + '\n\n';
-                } else {
-                  description += src + '\n\n';
-                }
+                const path = new URL(src, loadedUrl);
+                description += path.href + '\n\n';
               }
             }
           } else {
@@ -254,12 +245,8 @@ const parseParagraph = (
                 if (src.includes('http')) {
                   description += src + '\n\n';
                 } else if (!src.startsWith('data:image')) {
-                  if (loadedUrl) {
-                    const path = new URL(src, loadedUrl);
-                    description += path.href + '\n\n';
-                  }else{
-                    description += src + '\n\n';
-                  }
+                  const path = new URL(src, loadedUrl);
+                  description += path.href + '\n\n';
                 }
               }
             }
@@ -777,7 +764,6 @@ const generateDescriptionFromDom = (
   }
 
   const strHtml = $.html();
-
   const $clone = cheerio.load(strHtml);
   const $content = $clone(contentSector);
 
@@ -865,4 +851,4 @@ const convert2byteNumberTo1byte = (num_str) => {
   });
 };
 
-export { generateDescriptionFromDom, parseTable, generateDescriptionFromDomForRAGT };
+export { generateDescriptionFromDom, parseTable, convert2byteNumberTo1byte };
