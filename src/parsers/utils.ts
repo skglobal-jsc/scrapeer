@@ -1,6 +1,6 @@
 import { TableResult } from './table';
 import { FormResult } from './form';
-import { useLocale } from '../localization/locale'
+
 import * as url from 'url';
 
 export const cleanText = (text: string = '') => {
@@ -17,21 +17,21 @@ export const cleanText = (text: string = '') => {
   return txt;
 };
 
-export const getTableDescription = (tableResult: TableResult,lang:string = 'ja') => {
+export const getTableDescription = (tableResult: TableResult) => {
   let description = '';
 
   if(tableResult.totalRows == 0 || tableResult.totalCols == 0) return description;
 
-  description = `${useLocale('TableNumberRow', lang, tableResult.totalRows.toString())}、${useLocale('TableNumberColumn', lang, tableResult.totalRows.toString())}\n`;
+  description = `この下に、縦${tableResult.totalRows}行、横${tableResult.totalCols}列の表があります。\n`;
 
   if (tableResult.caption) {
-    description += `${useLocale('TableCaption', lang, tableResult.caption)}\n`;
+    description += `表のタイトルは${tableResult.caption}、です。\n`;
   }
 
   let title_str = tableResult.titles?.join('、') || 'no_titlte';
 
   if (tableResult.titles && tableResult.titles.length > 0) {
-    description += `${useLocale('TableTitle',lang, tableResult.titles.join('、'))}\n`;
+    description += `見出し行は左から${tableResult.titles.join('、')}です。\n`;
   }
 
   let currentIndex = 0;
@@ -42,9 +42,9 @@ export const getTableDescription = (tableResult: TableResult,lang:string = 'ja')
 
     if (row.cols && row.cols.length > 0) {
       if (currentIndex == 0) {
-        rowText += useLocale('Table1stRow',lang);
+        rowText += 'データの1行目、';
       } else {
-        rowText += `${useLocale('TableRow',lang, (currentIndex + 1).toString())}`;
+        rowText += `${currentIndex + 1}行目、`;
       }
 
       row.cols.forEach((col, j) => {
@@ -58,54 +58,7 @@ export const getTableDescription = (tableResult: TableResult,lang:string = 'ja')
 
       if(rowText && !rowText.includes(title_str)){
         if (i == tableResult.rows.length - 1) {
-          description += `${rowText}${useLocale('TableEnd',lang)}`;
-        } else {
-          description += `${rowText}\n`;
-        }
-        currentIndex++;
-      }
-    }
-  });
-
-  if(currentIndex == 0){
-    description = '';
-  }
-
-  return description;
-};
-
-export const getTableDescriptionForRAGT = (tableResult: TableResult,lang:string = 'ja') => {
-  let description = '';
-
-  if(tableResult.totalRows == 0 || tableResult.totalCols == 0) return description;
-
-  let title_str = tableResult.titles?.join('、') || 'no_titlte';
-
-  let currentIndex = 0;
-
-  tableResult.rows.forEach((row, i) => {
-    let rowText = '';
-    let rowTextRaw = '';
-
-    if (row.cols && row.cols.length > 0) {
-      if (currentIndex == 0) {
-        rowText += useLocale('Table1stRow',lang);
-      } else {
-        rowText += `${useLocale('TableRow',lang, (currentIndex + 1).toString())}`;
-      }
-
-      row.cols.forEach((col, j) => {
-        rowText += col + '、';
-        rowTextRaw+= col;
-      });
-
-      if(!rowTextRaw){
-        return;
-      }
-
-      if(rowText && !rowText.includes(title_str)){
-        if (i == tableResult.rows.length - 1) {
-          description += `${rowText}${useLocale('TableEndRAGT',lang)}`;
+          description += `${rowText}です。\n表の終わりです。`;
         } else {
           description += `${rowText}\n`;
         }
@@ -123,8 +76,7 @@ export const getTableDescriptionForRAGT = (tableResult: TableResult,lang:string 
 
 export const getFormDescription = (
   formResult: FormResult,
-  loadedUrl: string,
-  lang:string='ja'
+  loadedUrl: string
 ) => {
   let description = '';
 
@@ -136,7 +88,7 @@ export const getFormDescription = (
     action = `${parsedUrl.protocol}//${parsedUrl.host}${action}`;
   }
 
-  description = `${useLocale('Form', lang)}\n`;
+  description = `この下に、フォームがあります。\n`;
   description += formResult.data['submit']
     ? formResult.data['submit'] + '\n'
     : '';

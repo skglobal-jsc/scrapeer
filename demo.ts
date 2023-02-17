@@ -228,31 +228,34 @@ const getArticleDescription = ({ $, article }) => {
 };
 // const url = 'https://www.city.anjo.aichi.jp/manabu/seishonen/seishounennoie2.html';
 //http://www.pref.kagoshima.jp/af22/20221124kagoyuiseminar.html
-const url = 'https://www.city.miyawaka.lg.jp/kiji003445788/index.html';
+const url = 'https://www.vill.yamanakako.lg.jp/info/1025';
 const mockArticle = {
-  title: '認知症対応型共同生活介護（グループホーム）入居余力数',
-  publishDate: '2022-12-13T08:22:17.000Z',
+  title:
+    '山中湖村役場山梨県による新型コロナウイルス抗原検査キットの配布について',
+  publishDate: '2023-01-16T05:00:00.000Z',
   author: [],
   publisher: null,
   thumbnailURL: null,
-  keywords: ['認知症対応型共同生活介護（グループホーム）入居余力数'],
-  description:
-    '認知症対応型共同生活介護（グループホーム）入居余力数\n2022年12月13日\n\nここから本文です。\n\nこの下に、縦18行、横103列の表があります。\n見出し行は左から、施設名、所在地、電話番号、定員（人）、入居余力数（人）です。\nデータの1行目、1、グループホーム 笠松の郷、上有木320番地1、33-1255、18、0、\n2行目、2、グループホーム なびき、下有木1507番地1、32-3603、18、0、\n3行目、3、医療法人安倍病院グループホーム みどりの里、長井鶴230番地、33-2700、18、0、\n4行目、4、照陽園グループホーム、磯光2159番地1、32-5100、18、0、\n5行目、5、グループホーム 木蓮の家、長井鶴263番地7、32-5120、9、0、\n6行目、6、グループホーム 幸生園、龍徳1488番地、34-7575、18、2、\n7行目、7、グループホーム もみじの里、上大隈675番地1、33-1639、9、0、\n8行目、8、グループホーム かなえ、磯光1713番地45、34-1157、9、0、\n9行目、9、グループホーム 田苑、福丸247番地1、52-0625、9、2、\n10行目、10、グループホーム やまぶき、沼口976番地1、55-8855、18、0、\n11行目、11、グループホーム わきたの里 - http://www.wakitanosato.jp/、脇田805番地、54-1082、18、0、\n12行目、12、グループホーム うぐいす、本城1104番地、33-4710、9、1、\n13行目、13、グループホーム サルビア、宮田41番地5、32-1300、18、0、\n14行目、14、グループホーム 友愛、宮田191番地6、32-5205、9、0、\n15行目、15、グループホーム ジョイナス、本城720番地、34-5522、9、0、\n16行目、計、、、、207、5、です。\n表の終わりです。\n\nこのページに関する\nお問い合わせは\n\n（ID:445788）\n\n以上です。',
+  keywords: [],
   originalType: 'text/html',
-  taskId: 'd-fukuoka-miyawakashi',
-  id: 'd-fukuoka-miyawakashi-aHR0cHM6Ly93d3cuY2l0eS5taXlhd2FrYS5sZy5qcC9raWppMDAzNDQ1Nzg4L2luZGV4Lmh0bWw',
+  topic: ['新着情報'],
+  taskId: 'd-yamanashi-yamanakakomura',
+  id: 'd-yamanashi-yamanakakomura-aHR0cHM6Ly93d3cudmlsbC55YW1hbmFrYWtvLmxnLmpwL2luZm8vMTAyNQ',
   language: 'ja',
   gscType: 'NEWS',
-  crawledAt: '2022-12-16T00:10:50.455Z',
-  topic: ['新着情報'],
-  URL: 'https://www.city.miyawaka.lg.jp/kiji003445788/index.html',
-  loadedUrl: 'https://www.city.miyawaka.lg.jp/kiji003445788/index.html',
-  articleCssPath: '#container',
-  ttl: 1676335263,
+  crawledAt: '2023-02-17T09:13:04.812Z',
+  URL: 'https://www.vill.yamanakako.lg.jp/info/1025',
+  index: 12,
+  pageIndex: 1,
+  loadedUrl: 'https://www.vill.yamanakako.lg.jp/info/1025',
+  articleCssPath: '#ReadSpeaker',
+  description:
+    '山中湖村役場山梨県による新型コロナウイルス抗原検査キットの配布について\n2023年01月16日\n\nここから本文です。\n\n山梨県による新型コロナウイルス抗原検査キットの配布について\n\n以上です。',
+  ttl: 1681810999,
   contentURL:
-    'https://uvcrawler-gov-basestack-databuckete3889a50-syjuakpzl440.s3.amazonaws.com/news/detail/d-fukuoka-miyawakashi-aHR0cHM6Ly93d3cuY2l0eS5taXlhd2FrYS5sZy5qcC9raWppMDAzNDQ1Nzg4L2luZGV4Lmh0bWw.json',
+    'https://uvcrawler-staging-basestack-databuckete3889a50-116tx63targnh.s3.amazonaws.com/news/detail/d-yamanashi-yamanakakomura-aHR0cHM6Ly93d3cudmlsbC55YW1hbmFrYWtvLmxnLmpwL2luZm8vMTAyNQ.json',
   fullContentURL:
-    'https://uvcrawler-gov-basestack-databuckete3889a50-syjuakpzl440.s3.amazonaws.com/news/detail/d-fukuoka-miyawakashi-aHR0cHM6Ly93d3cuY2l0eS5taXlhd2FrYS5sZy5qcC9raWppMDAzNDQ1Nzg4L2luZGV4Lmh0bWw.html',
+    'https://uvcrawler-staging-basestack-databuckete3889a50-116tx63targnh.s3.amazonaws.com/news/detail/d-yamanashi-yamanakakomura-aHR0cHM6Ly93d3cudmlsbC55YW1hbmFrYWtvLmxnLmpwL2luZm8vMTAyNQ.html',
 };
 (async () => {
   const res = await axios.get(url, {
