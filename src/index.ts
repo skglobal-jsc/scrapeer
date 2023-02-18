@@ -195,6 +195,7 @@ const parseParagraph = (
         case 'thead':
         case 'u':
         case 'font':
+        case 'label':
           description += parseParagraph($, child, item);
           break;
         case 'ul':
