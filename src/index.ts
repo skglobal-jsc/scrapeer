@@ -49,8 +49,8 @@ const parseParagraph = (
       const tagType = child.type;
       const tagName = child.name;
 
-      console.log('tagType', tagType);
-      console.log('tagName', tagName);
+      // console.log('tagType', tagType);
+      // console.log('tagName', tagName);
       // console.log('data', child.data);
 
       if (tagType == 'text') {
