@@ -220,6 +220,11 @@ const parseParagraph = (
             if (isIgnoreText(src) || isIgnoreText(child.attribs.alt)) {
               continue;
             }
+
+            if(src.includes('data:image')){
+              continue;
+            }
+
             if (src) {
               description +=
                 '\n\nここに「' +
@@ -237,6 +242,11 @@ const parseParagraph = (
           } else {
             if (!child.attribs.alt) {
               let src = child.attribs.src ? String(child.attribs.src) : '';
+
+              if(src.includes('data:image')){
+                continue;
+              }
+
               if (src) {
                 description += '\n\nここに画像があります。\n';
                 if (src.includes('http')) {
