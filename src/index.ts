@@ -229,7 +229,7 @@ const parseParagraph = (
 
               if (src.includes('http')) {
                 description += src + '\n\n';
-              } else if (!src.startsWith('data:image')) {
+              } else if (!src.includes('data:image')) {
                 const path = new URL(src, loadedUrl);
                 description += path.href + '\n\n';
               }
@@ -241,7 +241,7 @@ const parseParagraph = (
                 description += '\n\nここに画像があります。\n';
                 if (src.includes('http')) {
                   description += src + '\n\n';
-                } else if (!src.startsWith('data:image')) {
+                } else if (!src.includes('data:image')) {
                   const path = new URL(src, loadedUrl);
                   description += path.href + '\n\n';
                 }
@@ -313,7 +313,7 @@ const parseTable = (
 
   let totalRows = $rows.length;
   let totalCols = $rows.first().children('th, td').length;
-  console.log('totalCols', totalCols);
+  // console.log('totalCols', totalCols);
   let bodyText = $($table).children('tbody').text().trim();
 
   if (bodyText.includes('jQuery(function()')) {
