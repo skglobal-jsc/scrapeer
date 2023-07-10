@@ -317,7 +317,7 @@ export const generateDescriptionFromDom = (
         .replace(/\s+\n/g, '\n\n')
         .replace(/\n{3,}/g, '\n\n')
 
-        console.log("result.description",result.description);
+        // console.log("result.description",result.description);
 
   return result;
 }

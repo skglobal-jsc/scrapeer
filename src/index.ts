@@ -30,7 +30,6 @@ const parseParagraph = (
   const { loadedUrl = '' } = item;
   let description = '';
 
-
   if ($element.children.length > 0) {
     for (let j = 0; j < $element.children.length; j++) {
       const child = $element.children[j];
@@ -53,6 +52,11 @@ const parseParagraph = (
       // console.log('tagName', tagName);
       // console.log('data', child.data);
 
+      if (tagName == 'rb') {
+        description += $(child).text();
+        continue;
+      }
+
       if (tagType == 'text') {
         if (child.data && !isIgnoreText(child.data)) {
           description += child.data.replace(/[\u200B-\u200D\uFEFF]/g, '');
@@ -70,7 +74,9 @@ const parseParagraph = (
             text_a = parseParagraph($, child, item);
           }
 
-          const href = child.attribs.href ? String(child.attribs.href.trim()) : '';
+          const href = child.attribs.href
+            ? String(child.attribs.href.trim())
+            : '';
           if (href) {
             if (!href.includes(text_a.trim())) {
               if (href.includes('https://get.adobe.com/jp/reader/')) {
@@ -193,6 +199,7 @@ const parseParagraph = (
         case 'tbody':
         case 'tr':
         case 'thead':
+        case 'ruby':
         case 'u':
         case 'font':
         case 'label':
@@ -221,7 +228,7 @@ const parseParagraph = (
               continue;
             }
 
-            if(src.includes('data:image')){
+            if (src.includes('data:image')) {
               continue;
             }
 
@@ -243,7 +250,7 @@ const parseParagraph = (
             if (!child.attribs.alt) {
               let src = child.attribs.src ? String(child.attribs.src) : '';
 
-              if(src.includes('data:image')){
+              if (src.includes('data:image')) {
                 continue;
               }
 
